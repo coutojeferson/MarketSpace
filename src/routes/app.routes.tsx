@@ -18,7 +18,7 @@ const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>();
 
 export function AppRoutes() {
   return (
-    <Navigator>
+    <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="home" component={Home} />
       <Screen name="myAds" component={MyAds} />
       <Screen name="signOut" component={SignOut} />
