@@ -65,7 +65,7 @@ export function SignIn() {
             }
           />
 
-          <Button title="Entrar" />
+          <Button title="Entrar" titleColor="gray.700" />
         </Center>
       </VStack>
       <VStack bg="gray.700" px={12} flex={1}>
@@ -75,6 +75,7 @@ export function SignIn() {
           </Text>
           <Button
             title="Criar uma conta"
+            titleColor="gray.200"
             variant="outline"
             onPress={handleNewAccount}
           />

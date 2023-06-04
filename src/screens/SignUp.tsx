@@ -87,12 +87,18 @@ export function SignUp() {
             }
           />
 
-          <Button title="Criar" mb={12} colorSolid="gray.100" />
+          <Button
+            title="Criar"
+            titleColor="gray.700"
+            mb={12}
+            color="gray.100"
+          />
           <Text color="gray.200" fontSize="sm" mb={3}>
             Já tem uma conta?
           </Text>
           <Button
             title="Ir para o login"
+            titleColor="gray.200"
             variant="outline"
             onPress={handleGoBack}
           />

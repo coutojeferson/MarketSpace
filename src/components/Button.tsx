@@ -1,32 +1,41 @@
-import { Button as ButtonNativeBase, IButtonProps, Text } from 'native-base';
+import {
+  Button as ButtonNativeBase,
+  HStack,
+  IButtonProps,
+  Text,
+} from 'native-base';
+import { Plus } from 'phosphor-react-native';
 
 type Props = IButtonProps & {
   title: string;
-  variant?: 'solid' | 'outline';
-  colorSolid?: string;
+  titleColor: string;
+  color?: string;
+  pressedColor?: string;
+  width?: any;
 };
 export function Button({
   title,
-  variant = 'solid',
-  colorSolid = 'blue.500',
+  titleColor = 'gray.200',
+  color = 'blue.500',
+  pressedColor = 'blue.700',
+  width = 'full',
   ...rest
 }: Props) {
   return (
     <ButtonNativeBase
-      w="full"
+      w={width}
       h={42}
-      bg={variant === 'outline' ? 'gray.500' : colorSolid}
+      bg={color}
       rounded="sm"
-      _pressed={{ bg: variant === 'outline' ? 'gray.400' : 'blue.700' }}
+      _pressed={{ bg: pressedColor }}
       {...rest}
     >
-      <Text
-        color={variant === 'outline' ? 'gray.200' : 'gray.700'}
-        fontFamily="heading"
-        fontSize="sm"
-      >
-        {title}
-      </Text>
+      <HStack alignItems="center">
+        <Plus color="#F7F7F8" size={16} />
+        <Text color={titleColor} fontFamily="heading" fontSize="sm" ml={2}>
+          {title}
+        </Text>
+      </HStack>
     </ButtonNativeBase>
   );
 }
