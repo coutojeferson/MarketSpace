@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { CardItem } from '@components/CardItem';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Header } from '@components/Header';
+import { Carousel } from '@components/Caroulsel';
 
 export function AdDetails() {
   const [service, setService] = useState('Todos');
@@ -28,23 +29,7 @@ export function AdDetails() {
     <VStack flex={1} px={6} mt={9}>
       <Header hideTitle onPress={handleBack} />
       <Box mt={4}>
-        <FlatList
-          data={carouselData}
-          horizontal
-          pagingEnabled
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Box>
-              <Image
-                source={item.source}
-                style={{
-                  width: Dimensions.get('window').width - 48,
-                  height: 200,
-                }}
-              />
-            </Box>
-          )}
-        />
+        <Carousel />
       </Box>
     </VStack>
   );
