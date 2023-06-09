@@ -3,11 +3,11 @@ import { Avatar } from './Avatar';
 import BackgroundItem from '@assets/item.png';
 import TagNew from '@assets/new.svg';
 import TagUsed from '@assets/used.svg';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
 type Tag = 'new' | 'used';
 
-type CardItemProps = {
+type CardItemProps = TouchableOpacityProps & {
   statusItem: Tag;
   avatar?: boolean;
   active?: boolean;
@@ -17,10 +17,11 @@ export function CardItem({
   statusItem,
   avatar = true,
   active = true,
+  ...rest
 }: CardItemProps) {
   return (
     <VStack minWidth={133} maxWidth={175} flex={1} mb={6}>
-      <TouchableOpacity>
+      <TouchableOpacity {...rest}>
         <VStack h={100}>
           <Image
             width="100%"

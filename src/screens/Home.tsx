@@ -14,8 +14,11 @@ import {
   VStack,
 } from 'native-base';
 import { CardItem } from '@components/CardItem';
+import { useNavigation } from '@react-navigation/native';
+import { AppNavigatorRoutesProps } from '@routes/app.routes';
 
 export function Home() {
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
   return (
     <VStack flex={1} px={6} bg="gray.600">
       <HStack mb={8} pt={12} alignItems="center" flexDirection="row">
@@ -69,7 +72,10 @@ export function Home() {
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <HStack flex={1} flexWrap="wrap" justifyContent="space-between">
-          <CardItem statusItem="used" />
+          <CardItem
+            statusItem="used"
+            onPress={() => navigation.navigate('adDetails')}
+          />
           <CardItem statusItem="new" />
           <CardItem statusItem="used" />
           {/* <CardItem statusItem="new" />
