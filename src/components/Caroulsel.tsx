@@ -21,8 +21,9 @@ export function Carousel() {
         <Box>
           <Image
             source={item.source}
+            resizeMode="cover"
             style={{
-              width: Dimensions.get('window').width - 48,
+              width: Dimensions.get('window').width,
               height: 200,
             }}
           />
