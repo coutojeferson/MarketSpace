@@ -31,7 +31,6 @@ export function Button({
       {...rest}
     >
       <HStack alignItems="center">
-        <Plus color="#F7F7F8" size={16} />
         <Text color={titleColor} fontFamily="heading" fontSize="sm" ml={2}>
           {title}
         </Text>

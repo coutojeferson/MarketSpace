@@ -2,7 +2,7 @@ import { ActiveAds } from '@components/ActiveAds';
 import { Avatar } from '@components/Avatar';
 import { Button } from '@components/Button';
 import { Input } from '@components/Input';
-import { MagnifyingGlass, Faders } from 'phosphor-react-native';
+import { MagnifyingGlass, Faders, Plus } from 'phosphor-react-native';
 
 import {
   Box,
@@ -19,6 +19,10 @@ import { AppNavigatorRoutesProps } from '@routes/app.routes';
 
 export function Home() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
+
+  function handleCreateAd() {
+    navigation.navigate('createAd');
+  }
   return (
     <VStack flex={1} px={6} bg="gray.600">
       <HStack mb={8} pt={12} alignItems="center" flexDirection="row">
@@ -32,11 +36,13 @@ export function Home() {
           </Text>
         </VStack>
         <Button
+          leftIcon={<Plus size={16} color="#EDECEE" />}
           title="Criar anúncio"
           titleColor="gray.700"
           width={139}
           color="gray.100"
           pressedColor="gray.200"
+          onPress={handleCreateAd}
         />
       </HStack>
       <Text color="gray.300" fontSize="md" fontFamily="body" mb={4}>
