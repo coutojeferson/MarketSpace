@@ -8,7 +8,7 @@ export function RadioButton() {
       <Radio.Group
         flexDirection="row"
         name="myRadioGroup"
-        accessibilityLabel="favorite number"
+        accessibilityLabel="Tipo do produto"
         value={value}
         onChange={(nextValue) => {
           setValue(nextValue);
