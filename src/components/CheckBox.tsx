@@ -1,10 +1,18 @@
-import { Checkbox, HStack, Text, ICheckboxGroupProps } from 'native-base';
+import {
+  Checkbox,
+  HStack,
+  Text,
+  ICheckboxGroupProps,
+  useTheme,
+} from 'native-base';
 
 type Props = ICheckboxGroupProps & {
   name: string;
 };
 
 export function CheckBox({ name, ...rest }: Props) {
+  const { sizes, colors } = useTheme();
+
   return (
     <Checkbox.Group
       borderRadius="none"

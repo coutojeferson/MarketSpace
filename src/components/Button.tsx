@@ -10,14 +10,12 @@ type Props = IButtonProps & {
   title: string;
   titleColor: string;
   color?: string;
-  pressedColor?: string;
   width?: any;
 };
 export function Button({
   title,
   titleColor = 'gray.200',
   color = 'blue.500',
-  pressedColor = 'blue.700',
   width = 'full',
   ...rest
 }: Props) {
@@ -27,7 +25,7 @@ export function Button({
       h={42}
       bg={color}
       rounded="sm"
-      _pressed={{ bg: pressedColor }}
+      _pressed={{ bg: 'none', opacity: 0.5 }}
       {...rest}
     >
       <HStack alignItems="center">
