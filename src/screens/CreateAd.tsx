@@ -1,16 +1,24 @@
+import { Button } from '@components/Button';
 import { CheckBox } from '@components/CheckBox';
 import { Header } from '@components/Header';
 import { Input } from '@components/Input';
 import { RadioButton } from '@components/RadioButton';
 import { TextArea } from '@components/TextArea';
 import { Toggle } from '@components/Toggle';
-import { VStack, Text, Box, ScrollView, Checkbox } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
+import { VStack, Text, Box, ScrollView, Checkbox, HStack } from 'native-base';
 import { Plus } from 'phosphor-react-native';
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 
 export function CreateAd() {
   const [groupValues, setGroupValues] = useState([]);
+
+  const navigation = useNavigation();
+
+  function handleGoBack() {
+    navigation.goBack();
+  }
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <VStack flex={1} bgColor="gray.600" px={6} py={9}>
@@ -52,12 +60,49 @@ export function CreateAd() {
         <Text fontFamily="heading" fontSize="sm" mb={4}>
           Meios de pagamento aceitos
         </Text>
-        <CheckBox name="Boleto" onChange={setGroupValues} value={groupValues} />
-        <CheckBox name="Pix" />
-        <CheckBox name="Dinheiro" />
-        <CheckBox name="Cartão de Crédito" />
-        <CheckBox name="Depósito Bancário" />
+        <CheckBox
+          name="Boleto"
+          onChange={setGroupValues}
+          value={groupValues}
+          aria-label="check box de boleto"
+        />
+        <CheckBox
+          name="Pix"
+          onChange={setGroupValues}
+          aria-label="check box de pix"
+        />
+        <CheckBox
+          name="Dinheiro"
+          onChange={setGroupValues}
+          aria-label="check box de dinheiro"
+        />
+        <CheckBox
+          name="Cartão de Crédito"
+          onChange={setGroupValues}
+          aria-label="check box de cartão de crédito"
+        />
+        <CheckBox
+          name="Depósito Bancário"
+          onChange={setGroupValues}
+          aria-label="check box de depósito bancário"
+        />
       </VStack>
+      <HStack px={6} py={5} justifyContent="space-between">
+        <Button
+          onPress={handleGoBack}
+          width={157}
+          title="Cancelar"
+          titleColor="gray.200"
+          color="gray.500"
+        />
+
+        <Button
+          width={157}
+          title="Avançar"
+          titleColor="gray.700"
+          color="gray.100"
+        />
+      </HStack>
     </ScrollView>
   );
 }
