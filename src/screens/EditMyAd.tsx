@@ -12,7 +12,7 @@ import { Plus } from 'phosphor-react-native';
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 
-export function CreateAd() {
+export function EditMyAd() {
   const [groupValues, setGroupValues] = useState([]);
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
@@ -26,7 +26,7 @@ export function CreateAd() {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <VStack flex={1} bgColor="gray.600" px={6} py={9}>
-        <Header title="Criar anúncio" />
+        <Header title="Editar anúncio" />
         <Text fontFamily="heading" fontSize="sm" mt={4}>
           Imagens
         </Text>

@@ -1,7 +1,11 @@
 import { Box, FlatList } from 'native-base';
 import { Dimensions, Image } from 'react-native';
 
-export function Carousel() {
+type Props = {
+  active?: boolean;
+};
+
+export function Carousel({ active = true }: Props) {
   const width = Dimensions.get('window').width;
 
   const carouselData = [
@@ -13,6 +17,7 @@ export function Carousel() {
 
   return (
     <FlatList
+      opacity={active ? 1 : 0.6}
       data={carouselData}
       horizontal
       pagingEnabled
