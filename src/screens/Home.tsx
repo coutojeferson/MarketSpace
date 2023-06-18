@@ -41,7 +41,6 @@ export function Home() {
           titleColor="gray.700"
           width={139}
           color="gray.100"
-          pressedColor="gray.200"
           onPress={handleCreateAd}
         />
       </HStack>

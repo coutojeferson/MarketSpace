@@ -6,6 +6,7 @@ import { RadioButton } from '@components/RadioButton';
 import { TextArea } from '@components/TextArea';
 import { Toggle } from '@components/Toggle';
 import { useNavigation } from '@react-navigation/native';
+import { AppNavigatorRoutesProps } from '@routes/app.routes';
 import { VStack, Text, Box, ScrollView, Checkbox, HStack } from 'native-base';
 import { Plus } from 'phosphor-react-native';
 import { useState } from 'react';
@@ -14,10 +15,13 @@ import { TouchableOpacity } from 'react-native';
 export function CreateAd() {
   const [groupValues, setGroupValues] = useState([]);
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   function handleGoBack() {
     navigation.goBack();
+  }
+  function handlePreviewScreen() {
+    navigation.navigate('adPreview');
   }
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -97,6 +101,7 @@ export function CreateAd() {
         />
 
         <Button
+          onPress={handlePreviewScreen}
           width={157}
           title="Avançar"
           titleColor="gray.700"

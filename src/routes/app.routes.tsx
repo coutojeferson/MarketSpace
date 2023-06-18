@@ -8,13 +8,17 @@ import { MyAds } from '@screens/MyAds';
 import { AdDetails } from '@screens/AdDetails';
 import { SignOut } from '@screens/SignOut';
 import { CreateAd } from '@screens/CreateAd';
+import { AdPreview } from '@screens/AdPreview';
+import { MyAdDetail } from '@screens/MyAdDetail';
 import { House, Tag, SignOut as SignOutIcon } from 'phosphor-react-native';
 import { Platform } from 'react-native';
 
 type AppRoutes = {
   home: undefined;
   myAds: undefined;
+  myAdDetail: undefined;
   adDetails: undefined;
+  adPreview: undefined;
   createAd: undefined;
   signOut: undefined;
 };
@@ -65,8 +69,22 @@ export function AppRoutes() {
         }}
       />
       <Screen
+        name="myAdDetail"
+        component={MyAdDetail}
+        options={{
+          tabBarButton: () => null,
+        }}
+      />
+      <Screen
         name="createAd"
         component={CreateAd}
+        options={{
+          tabBarButton: () => null,
+        }}
+      />
+      <Screen
+        name="adPreview"
+        component={AdPreview}
         options={{
           tabBarButton: () => null,
         }}

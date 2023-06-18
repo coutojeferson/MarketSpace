@@ -9,7 +9,7 @@ type HeaderTypeProps = TouchableOpacityProps & {
 
 export function Header({ title, hideTitle, ...rest }: HeaderTypeProps) {
   return (
-    <HStack alignItems="center">
+    <HStack alignItems={title ? 'center' : 'flex-start'}>
       <TouchableOpacity {...rest}>
         <ArrowLeft />
       </TouchableOpacity>
