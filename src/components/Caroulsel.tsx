@@ -5,7 +5,7 @@ type Props = {
   active?: boolean;
 };
 
-export function Carousel({ active }: Props) {
+export function Carousel({ active = true }: Props) {
   const width = Dimensions.get('window').width;
 
   const carouselData = [

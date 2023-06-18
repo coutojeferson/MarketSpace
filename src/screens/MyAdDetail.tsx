@@ -19,6 +19,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 import { Header } from '@components/Header';
 import { useState } from 'react';
+import { TouchableOpacity } from 'react-native';
 
 export function MyAdDetail() {
   const [activeAd, setActiveAd] = useState(true);
@@ -26,6 +27,9 @@ export function MyAdDetail() {
 
   function handleChangeAdStatus() {
     setActiveAd(!activeAd);
+  }
+  function handleEditAd() {
+    navigation.navigate('editMyAdd');
   }
   function handleDeleteMyAd() {
     navigation.navigate('adPreview');
@@ -35,7 +39,9 @@ export function MyAdDetail() {
     <VStack flex={1} bg="gray.600">
       <HStack px={6} mt={9} mb={3} justifyContent="space-between">
         <Header />
-        <PencilSimpleLine />
+        <TouchableOpacity onPress={handleEditAd}>
+          <PencilSimpleLine />
+        </TouchableOpacity>
       </HStack>
       <ScrollView showsVerticalScrollIndicator={false}>
         <VStack
