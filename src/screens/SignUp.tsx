@@ -15,14 +15,33 @@ import { Input } from '@components/Input';
 import { Button } from '@components/Button';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useForm, Controller } from 'react-hook-form';
+
+type FormDataProps = {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  password_confirm: string;
+};
+
 export function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>();
 
   const navigation = useNavigation();
 
   function handleGoBack() {
     navigation.goBack();
+  }
+  function handleSignUp(data: FormDataProps) {
+    console.log(data);
   }
   return (
     <ScrollView
@@ -42,49 +61,107 @@ export function SignUp() {
 
           <Profile />
 
-          <Input placeholder="Nome" keyboardType="email-address" mt={5} />
-          <Input
-            placeholder="E-mail"
-            keyboardType="email-address"
-            autoCapitalize="none"
+          {/* <Controller 
+control={control}
+name=''
+/> */}
+          <Controller
+            control={control}
+            name="name"
+            rules={{
+              required: 'Informe o nome.',
+            }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Nome"
+                mt={5}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
           />
-          <Input
-            placeholder="Telefone"
-            keyboardType="phone-pad"
-            autoCapitalize="none"
+
+          <Text>{errors.name?.message}</Text>
+
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="E-mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
           />
-          <Input
-            placeholder="Senha"
-            type={showPassword ? 'text' : 'password'}
-            InputRightElement={
-              <Pressable
-                style={{ marginRight: 24 }}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <Eye color="#5F5B62" size={24} />
-                ) : (
-                  <EyeSlash color="#5F5B62" size={24} />
-                )}
-              </Pressable>
-            }
+
+          <Controller
+            control={control}
+            name="phone"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Telefone"
+                keyboardType="phone-pad"
+                autoCapitalize="none"
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
           />
-          <Input
-            mb={8}
-            placeholder="Confirmar senha"
-            type={showConfirmPassword ? 'text' : 'password'}
-            InputRightElement={
-              <Pressable
-                style={{ marginRight: 24 }}
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                {showConfirmPassword ? (
-                  <Eye color="#5F5B62" size={24} />
-                ) : (
-                  <EyeSlash color="#5F5B62" size={24} />
-                )}
-              </Pressable>
-            }
+
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Senha"
+                type={showPassword ? 'text' : 'password'}
+                InputRightElement={
+                  <Pressable
+                    style={{ marginRight: 24 }}
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <Eye color="#5F5B62" size={24} />
+                    ) : (
+                      <EyeSlash color="#5F5B62" size={24} />
+                    )}
+                  </Pressable>
+                }
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="password_confirm"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                mb={8}
+                placeholder="Confirmar senha"
+                type={showConfirmPassword ? 'text' : 'password'}
+                InputRightElement={
+                  <Pressable
+                    style={{ marginRight: 24 }}
+                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <Eye color="#5F5B62" size={24} />
+                    ) : (
+                      <EyeSlash color="#5F5B62" size={24} />
+                    )}
+                  </Pressable>
+                }
+                onChangeText={onChange}
+                value={value}
+                onSubmitEditing={handleSubmit(handleSignUp)}
+                returnKeyType="send"
+              />
+            )}
           />
 
           <Button
@@ -92,6 +169,7 @@ export function SignUp() {
             titleColor="gray.700"
             mb={12}
             color="gray.100"
+            onPress={handleSubmit(handleSignUp)}
           />
           <Text color="gray.200" fontSize="sm" mb={3}>
             Já tem uma conta?
