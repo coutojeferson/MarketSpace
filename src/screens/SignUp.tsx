@@ -1,12 +1,15 @@
 import {
   VStack,
   Text,
+  Image,
   Center,
   Heading,
   Pressable,
   Icon,
   KeyboardAvoidingView,
   ScrollView,
+  Toast,
+  useToast,
 } from 'native-base';
 import LogoSvg from '@assets/logo.svg';
 import Profile from '@assets/profile.svg';
@@ -19,6 +22,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import { TouchableOpacity } from 'react-native';
 
 type FormDataProps = {
@@ -47,6 +51,12 @@ const signUpSchema = yup.object({
 export function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [photoIsLoading, setPhotoIsLoading] = useState(false);
+  const [userPhoto, setUserPhoto] = useState(
+    'https://github.com/coutojeferson.png',
+  );
+
+  const toast = useToast();
 
   const {
     control,
@@ -59,17 +69,37 @@ export function SignUp() {
   const navigation = useNavigation();
 
   async function handleUserPhotoSelect() {
-    const photoSelected = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-      aspect: [4, 4],
-      allowsEditing: true,
-    });
+    setPhotoIsLoading(true);
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      });
 
-    console.log(photoSelected);
+      if (photoSelected.canceled) {
+        return;
+      }
 
-    if (photoSelected.canceled) {
-      return;
+      if (photoSelected.assets[0].uri) {
+        const photoInfo = await FileSystem.getInfoAsync(
+          photoSelected.assets[0].uri,
+        );
+
+        if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
+          return toast.show({
+            title: 'Essa imagem é muito grande. Escolha uma de até 5MB.',
+            placement: 'top',
+            bgColor: 'red.500',
+          });
+        }
+        setUserPhoto(photoSelected.assets[0].uri);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPhotoIsLoading(false);
     }
   }
 
@@ -95,7 +125,16 @@ export function SignUp() {
             seus produtos
           </Text>
           <TouchableOpacity onPress={handleUserPhotoSelect}>
-            <Profile />
+            {userPhoto ? (
+              <Image
+                borderRadius="full"
+                source={{ uri: userPhoto }}
+                alt="Foto do usuário"
+                size={40}
+              />
+            ) : (
+              <Profile />
+            )}
           </TouchableOpacity>
 
           <Controller
