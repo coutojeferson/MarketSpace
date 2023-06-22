@@ -10,12 +10,16 @@ import {
 } from 'native-base';
 import LogoSvg from '@assets/logo.svg';
 import Profile from '@assets/profile.svg';
-import { Eye, EyeSlash } from 'phosphor-react-native';
+import { Eye, EyeSlash, Password } from 'phosphor-react-native';
 import { Input } from '@components/Input';
 import { Button } from '@components/Button';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import * as ImagePicker from 'expo-image-picker';
+import { TouchableOpacity } from 'react-native';
 
 type FormDataProps = {
   name: string;
@@ -25,6 +29,21 @@ type FormDataProps = {
   password_confirm: string;
 };
 
+const signUpSchema = yup.object({
+  name: yup.string().required('Informe o nome.'),
+  email: yup.string().required('Informe o e-mail.').email('E-mail inválido.'),
+  phone: yup.string().required('Informe o telefone.'),
+  password: yup
+    .string()
+    .required('Informe a senha.')
+    .min(6, 'A senha deve ter pelo menos 6 dígitos.'),
+  password_confirm: yup
+    .string()
+    .required('Confirme a senha.')
+    .min(6, 'A senha deve ter pelo menos 6 dígitos.')
+    .oneOf([yup.ref('password')], 'A confirmação da senha não confere.'),
+});
+
 export function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -33,9 +52,26 @@ export function SignUp() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormDataProps>();
+  } = useForm<FormDataProps>({
+    resolver: yupResolver(signUpSchema),
+  });
 
   const navigation = useNavigation();
+
+  async function handleUserPhotoSelect() {
+    const photoSelected = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+      aspect: [4, 4],
+      allowsEditing: true,
+    });
+
+    console.log(photoSelected);
+
+    if (photoSelected.canceled) {
+      return;
+    }
+  }
 
   function handleGoBack() {
     navigation.goBack();
@@ -58,30 +94,23 @@ export function SignUp() {
             Crie sua conta e use o espaço para comprar itens variados e vender
             seus produtos
           </Text>
+          <TouchableOpacity onPress={handleUserPhotoSelect}>
+            <Profile />
+          </TouchableOpacity>
 
-          <Profile />
-
-          {/* <Controller 
-control={control}
-name=''
-/> */}
           <Controller
             control={control}
             name="name"
-            rules={{
-              required: 'Informe o nome.',
-            }}
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="Nome"
                 mt={5}
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.name?.message}
               />
             )}
           />
-
-          <Text>{errors.name?.message}</Text>
 
           <Controller
             control={control}
@@ -93,6 +122,7 @@ name=''
                 autoCapitalize="none"
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.email?.message}
               />
             )}
           />
@@ -107,6 +137,7 @@ name=''
                 autoCapitalize="none"
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.phone?.message}
               />
             )}
           />
@@ -132,6 +163,7 @@ name=''
                 }
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.password?.message}
               />
             )}
           />
@@ -141,7 +173,6 @@ name=''
             name="password_confirm"
             render={({ field: { onChange, value } }) => (
               <Input
-                mb={8}
                 placeholder="Confirmar senha"
                 type={showConfirmPassword ? 'text' : 'password'}
                 InputRightElement={
@@ -158,6 +189,7 @@ name=''
                 }
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.password_confirm?.message}
                 onSubmitEditing={handleSubmit(handleSignUp)}
                 returnKeyType="send"
               />
@@ -167,6 +199,7 @@ name=''
           <Button
             title="Criar"
             titleColor="gray.700"
+            mt={2}
             mb={12}
             color="gray.100"
             onPress={handleSubmit(handleSignUp)}
@@ -177,7 +210,7 @@ name=''
           <Button
             title="Ir para o login"
             titleColor="gray.200"
-            variant="outline"
+            color="gray.500"
             onPress={handleGoBack}
           />
         </Center>
