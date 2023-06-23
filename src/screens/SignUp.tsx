@@ -52,6 +52,7 @@ export function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
+  const [photoType, setPhotoType] = useState<any>();
   const [userPhoto, setUserPhoto] = useState(
     'https://github.com/coutojeferson.png',
   );
@@ -95,6 +96,7 @@ export function SignUp() {
           });
         }
         setUserPhoto(photoSelected.assets[0].uri);
+        setPhotoType(photoSelected.assets[0].type);
       }
     } catch (error) {
       console.log(error);
@@ -106,8 +108,23 @@ export function SignUp() {
   function handleGoBack() {
     navigation.goBack();
   }
-  function handleSignUp(data: FormDataProps) {
-    console.log(data);
+  function handleSignUp({ name, email, phone, password }: FormDataProps) {
+    const fileExtension = userPhoto.split('.').pop();
+    const photoFile = {
+      name: `${name}.${fileExtension}`.toLowerCase,
+      uri: userPhoto,
+      type: `${photoType}/${fileExtension}`,
+    };
+    console.log(photoFile);
+
+    fetch('http://192.168.0.10:3333/users', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify([name, email, password]),
+    });
   }
   return (
     <ScrollView
