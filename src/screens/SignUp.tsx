@@ -23,12 +23,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
-import { TouchableOpacity } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
+import { api } from '@services/api';
+import axios from 'axios';
+import { AppError } from '@utils/appError';
 
 type FormDataProps = {
   name: string;
   email: string;
-  phone: string;
+  tel: string;
   password: string;
   password_confirm: string;
 };
@@ -36,7 +39,7 @@ type FormDataProps = {
 const signUpSchema = yup.object({
   name: yup.string().required('Informe o nome.'),
   email: yup.string().required('Informe o e-mail.').email('E-mail inválido.'),
-  phone: yup.string().required('Informe o telefone.'),
+  tel: yup.string().required('Informe o telefone.'),
   password: yup
     .string()
     .required('Informe a senha.')
@@ -95,6 +98,7 @@ export function SignUp() {
             bgColor: 'red.500',
           });
         }
+        console.log('foto selecionada', photoSelected.assets[0]);
         setUserPhoto(photoSelected.assets[0].uri);
         setPhotoType(photoSelected.assets[0].type);
       }
@@ -108,23 +112,40 @@ export function SignUp() {
   function handleGoBack() {
     navigation.goBack();
   }
-  function handleSignUp({ name, email, phone, password }: FormDataProps) {
-    const fileExtension = userPhoto.split('.').pop();
-    const photoFile = {
-      name: `${name}.${fileExtension}`.toLowerCase,
-      uri: userPhoto,
-      type: `${photoType}/${fileExtension}`,
-    };
-    console.log(photoFile);
+  async function handleSignUp({ name, email, tel, password }: FormDataProps) {
+    try {
+      const fileExtension = userPhoto.split('.').pop();
+      const photoFile = {
+        name: `${name}.${fileExtension}`.toLowerCase(),
+        uri: userPhoto,
+        type: `${photoType}/${fileExtension}`,
+      } as any;
 
-    fetch('http://192.168.0.10:3333/users', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify([name, email, password]),
-    });
+      // console.log(photoFile);
+
+      const formData = new FormData();
+      formData.append('avatar', photoFile);
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('tel', tel);
+      formData.append('password', password);
+
+      // console.log(formData)
+
+      const response = await api.post('/users', { formData });
+
+      console.log('Caiu aqui', response.data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível criar a conta. Tente novamente mais tarde.';
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      });
+    }
   }
   return (
     <ScrollView
@@ -185,7 +206,7 @@ export function SignUp() {
 
           <Controller
             control={control}
-            name="phone"
+            name="tel"
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="Telefone"
@@ -193,7 +214,7 @@ export function SignUp() {
                 autoCapitalize="none"
                 onChangeText={onChange}
                 value={value}
-                errorMessage={errors.phone?.message}
+                errorMessage={errors.tel?.message}
               />
             )}
           />
