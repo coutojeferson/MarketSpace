@@ -11,6 +11,8 @@ import { THEME } from './src/theme';
 import { SignUp } from '@screens/SignUp';
 import { Routes } from '@routes/index';
 
+import { AuthContext } from '@contexts/AuthContext';
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     Karla_400Regular,
@@ -23,8 +25,16 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-
-      {fontsLoaded ? <Routes /> : <Loading />}
+      <AuthContext.Provider
+        value={{
+          id: '1',
+          name: 'Jeferson Couto',
+          email: 'jeferson@email.com',
+          avatar: 'jeferson.png',
+        }}
+      >
+        {fontsLoaded ? <Routes /> : <Loading />}
+      </AuthContext.Provider>
     </NativeBaseProvider>
   );
 }
