@@ -98,7 +98,6 @@ export function SignUp() {
             bgColor: 'red.500',
           });
         }
-        console.log('foto selecionada', photoSelected.assets[0]);
         setUserPhoto(photoSelected.assets[0].uri);
         setPhotoType(photoSelected.assets[0].type);
       }
@@ -121,8 +120,6 @@ export function SignUp() {
         type: `${photoType}/${fileExtension}`,
       } as any;
 
-      // console.log(photoFile);
-
       const formData = new FormData();
       formData.append('avatar', photoFile);
       formData.append('name', name);
@@ -130,9 +127,13 @@ export function SignUp() {
       formData.append('tel', tel);
       formData.append('password', password);
 
-      // console.log(formData)
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      };
 
-      const response = await api.post('/users', { formData });
+      const response = await api.post('/users', formData, config);
 
       console.log('Caiu aqui', response.data);
     } catch (error) {
