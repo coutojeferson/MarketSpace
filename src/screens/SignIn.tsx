@@ -45,7 +45,7 @@ export function SignIn() {
 
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
 
-  function handleLogin(data: FormDataProps) {
+  function handleSignIn(data: FormDataProps) {
     console.log(data);
   }
 
@@ -107,7 +107,7 @@ export function SignIn() {
                 onChangeText={onChange}
                 value={value}
                 errorMessage={errors.password?.message}
-                onSubmitEditing={handleSubmit(handleLogin)}
+                onSubmitEditing={handleSubmit(handleSignIn)}
                 returnKeyType="send"
               />
             )}
@@ -117,7 +117,7 @@ export function SignIn() {
             mt={4}
             title="Entrar"
             titleColor="gray.700"
-            onPress={handleSubmit(handleLogin)}
+            onPress={handleSubmit(handleSignIn)}
           />
         </Center>
       </VStack>
