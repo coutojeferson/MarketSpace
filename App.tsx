@@ -11,7 +11,7 @@ import { THEME } from './src/theme';
 import { SignUp } from '@screens/SignUp';
 import { Routes } from '@routes/index';
 
-import { AuthContext } from '@contexts/AuthContext';
+import { AuthContextProvider } from '@contexts/AuthContext';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -25,16 +25,9 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      <AuthContext.Provider
-        value={{
-          id: '1',
-          name: 'Jeferson Couto',
-          email: 'jeferson@email.com',
-          avatar: 'jeferson.png',
-        }}
-      >
+      <AuthContextProvider>
         {fontsLoaded ? <Routes /> : <Loading />}
-      </AuthContext.Provider>
+      </AuthContextProvider>
     </NativeBaseProvider>
   );
 }
