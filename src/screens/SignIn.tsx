@@ -7,6 +7,7 @@ import {
   Icon,
   KeyboardAvoidingView,
   ScrollView,
+  useToast,
 } from 'native-base';
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes';
 import LogoSvg from '@assets/logo.svg';
@@ -18,6 +19,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useAuth } from '@hooks/useAuth';
+import { AppError } from '@utils/appError';
 
 type FormDataProps = {
   email: string;
@@ -34,6 +37,10 @@ const signInSchema = yup.object({
 
 export function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+
+  const { signIn } = useAuth();
 
   const {
     control,
@@ -45,8 +52,24 @@ export function SignIn() {
 
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
 
-  function handleSignIn(data: FormDataProps) {
-    console.log(data);
+  async function handleSignIn({ email, password }: FormDataProps) {
+    try {
+      setIsLoading(true);
+      await signIn(email, password);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível entrar. Tente novamente mais tarde.';
+
+      setIsLoading(false);
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      });
+    }
   }
 
   function handleNewAccount() {
@@ -118,6 +141,7 @@ export function SignIn() {
             title="Entrar"
             titleColor="gray.700"
             onPress={handleSubmit(handleSignIn)}
+            isLoading={isLoading}
           />
         </Center>
       </VStack>
