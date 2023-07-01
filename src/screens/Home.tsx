@@ -16,8 +16,10 @@ import {
 import { CardItem } from '@components/CardItem';
 import { useNavigation } from '@react-navigation/native';
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
+import { useAuth } from '@hooks/useAuth';
 
 export function Home() {
+  const { user } = useAuth();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   function handleCreateAd() {
@@ -32,7 +34,7 @@ export function Home() {
             Boas vindas,
           </Text>
           <Text color="gray.100" fontSize="md" fontFamily="heading">
-            Ross!
+            {user.name}
           </Text>
         </VStack>
         <Button

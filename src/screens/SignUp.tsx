@@ -27,6 +27,7 @@ import { Alert, TouchableOpacity } from 'react-native';
 import { api } from '@services/api';
 import axios from 'axios';
 import { AppError } from '@utils/appError';
+import { useAuth } from '@hooks/useAuth';
 
 type FormDataProps = {
   name: string;
@@ -59,6 +60,9 @@ export function SignUp() {
   const [userPhoto, setUserPhoto] = useState(
     'https://github.com/coutojeferson.png',
   );
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { signIn } = useAuth();
 
   const toast = useToast();
 
@@ -113,6 +117,7 @@ export function SignUp() {
   }
   async function handleSignUp({ name, email, tel, password }: FormDataProps) {
     try {
+      setIsLoading(true);
       const fileExtension = userPhoto.split('.').pop();
       const photoFile = {
         name: `${name}.${fileExtension}`.toLowerCase(),
@@ -135,8 +140,11 @@ export function SignUp() {
 
       const response = await api.post('/users', formData, config);
 
+      await signIn(email, password);
+
       console.log('Caiu aqui', response.data);
     } catch (error) {
+      setIsLoading(false);
       const isAppError = error instanceof AppError;
       const title = isAppError
         ? error.message
@@ -275,6 +283,7 @@ export function SignUp() {
           />
 
           <Button
+            isLoading={isLoading}
             title="Criar"
             titleColor="gray.700"
             mt={2}
