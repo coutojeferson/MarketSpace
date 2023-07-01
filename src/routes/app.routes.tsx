@@ -13,6 +13,7 @@ import { MyAdDetail } from '@screens/MyAdDetail';
 import { EditMyAd } from '@screens/EditMyAd';
 import { House, Tag, SignOut as SignOutIcon } from 'phosphor-react-native';
 import { Platform } from 'react-native';
+import { useAuth } from '@hooks/useAuth';
 
 type AppRoutes = {
   home: undefined;
@@ -30,6 +31,7 @@ export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>();
 
 export function AppRoutes() {
+  const { signOut } = useAuth();
   const { sizes, colors } = useTheme();
 
   const iconSize = sizes[6];
