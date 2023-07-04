@@ -85,14 +85,18 @@ export function CreateAd() {
         <Text mt={1} color="gray.300">
           Escolha até 3 imagens para mostrar o quando o seu produto é incrível!
         </Text>
-        <View style={{ flexDirection: 'row' }}>
-          {itemPhoto.map((item) => (
-            <BoxSelectImage uri={item} />
-          ))}
-          {itemPhoto.length < 3 && (
-            <BoxSelectImage onPress={handleItemPhotoSelect} />
-          )}
-        </View>
+        <HStack>
+          <HStack>
+            {itemPhoto.map((item) => (
+              <BoxSelectImage uri={item} />
+            ))}
+          </HStack>
+          <Box>
+            {itemPhoto.length < 3 && (
+              <BoxSelectImage onPress={handleItemPhotoSelect} />
+            )}
+          </Box>
+        </HStack>
 
         <Text fontFamily="heading" fontSize="sm" mt={8}>
           Sobre o produto
