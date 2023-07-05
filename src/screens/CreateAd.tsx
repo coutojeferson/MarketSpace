@@ -32,6 +32,11 @@ export function CreateAd() {
 
   const toast = useToast();
 
+  function handleRemovePhoto(uri: string) {
+    const remainingPhotos = itemPhoto.filter((photos) => photos !== uri);
+    setItemPhoto([...remainingPhotos]);
+  }
+
   async function handleItemPhotoSelect() {
     console.log('Entrou aqui');
     try {
@@ -88,7 +93,10 @@ export function CreateAd() {
         <HStack>
           <HStack>
             {itemPhoto.map((item) => (
-              <BoxSelectImage uri={item} />
+              <BoxSelectImage
+                uri={item}
+                onRemovePhoto={(uri) => handleRemovePhoto(uri)}
+              />
             ))}
           </HStack>
           <Box>

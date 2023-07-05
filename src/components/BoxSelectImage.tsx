@@ -6,13 +6,17 @@ import { IconClose } from './IconClose';
 
 type photoSelectedType = TouchableOpacityProps & {
   uri?: any;
+  onRemovePhoto?: (uri: string) => void;
 };
 
-export function BoxSelectImage({ uri, ...rest }: photoSelectedType) {
-  function handleClose() {
-    console.log('Teste', uri);
+export function BoxSelectImage({
+  uri,
+  onRemovePhoto = () => {},
+  ...rest
+}: photoSelectedType) {
+  function handleClose(uri: string) {
+    onRemovePhoto(uri);
   }
-
   return (
     <Box mt={4} flexDirection="row">
       <TouchableOpacity {...rest}>
@@ -34,7 +38,7 @@ export function BoxSelectImage({ uri, ...rest }: photoSelectedType) {
                 source={{ uri: uri }}
                 alt="Foto do produto"
               />
-              <IconClose onPress={handleClose} />
+              <IconClose onPress={() => handleClose(uri)} />
             </Box>
           ) : (
             <Plus size={24} color="#9F9BA1" />
