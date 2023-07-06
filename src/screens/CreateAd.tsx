@@ -22,6 +22,30 @@ import { useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+import * as yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+type FormDataProps = {
+  name: string;
+  description: string;
+  is_new: boolean;
+  price: string;
+  accept_trade: boolean;
+  payment_methods: string[];
+};
+
+type FormDataValidateProps = {
+  name: string;
+  description: string;
+  price: string;
+};
+
+const createdAdSchema = yup.object({
+  name: yup.string().required('Informe o nome do item.'),
+  description: yup.string().required('Informe uma descrição para o item.'),
+  price: yup.string().required('Informe o preço do produto.'),
+});
 
 export function CreateAd() {
   const [groupValues, setGroupValues] = useState([]);
@@ -31,6 +55,14 @@ export function CreateAd() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   const toast = useToast();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataValidateProps>({
+    resolver: yupResolver(createdAdSchema),
+  });
 
   function handleRemovePhoto(uri: string) {
     const remainingPhotos = itemPhoto.filter((photos) => photos !== uri);
