@@ -16,6 +16,8 @@ import {
   Checkbox,
   HStack,
   useToast,
+  Radio,
+  Switch,
 } from 'native-base';
 import { Plus } from 'phosphor-react-native';
 import { useState } from 'react';
@@ -23,7 +25,7 @@ import { TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 type FormDataProps = {
@@ -37,13 +39,11 @@ type FormDataProps = {
 
 type FormDataValidateProps = {
   name: string;
-  description: string;
   price: string;
 };
 
 const createdAdSchema = yup.object({
   name: yup.string().required('Informe o nome do item.'),
-  description: yup.string().required('Informe uma descrição para o item.'),
   price: yup.string().required('Informe o preço do produto.'),
 });
 
@@ -51,6 +51,9 @@ export function CreateAd() {
   const [groupValues, setGroupValues] = useState([]);
   const [photoType, setPhotoType] = useState<any>();
   const [itemPhoto, setItemPhoto] = useState<String[]>([]);
+  const [value, setValue] = useState('isNew');
+  const [acceptTrade, setAcceptTrade] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState([]);
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
@@ -109,9 +112,12 @@ export function CreateAd() {
   function handleGoBack() {
     navigation.goBack();
   }
-  function handlePreviewScreen() {
-    navigation.navigate('adPreview');
+  function handlePreviewScreen(data: FormDataValidateProps) {
+    console.log(data);
+    // navigation.navigate('adPreview');
   }
+
+  console.log(paymentMethods);
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <VStack flex={1} bgColor="gray.600" px={6} py={9}>
@@ -137,52 +143,106 @@ export function CreateAd() {
             )}
           </Box>
         </HStack>
-
         <Text fontFamily="heading" fontSize="sm" mt={8}>
           Sobre o produto
         </Text>
-        <Input mt={4} placeholder="Título do anúncio" />
-        <TextArea placeholder="Descrição do produto" />
-        <RadioButton />
-        <Text fontFamily="heading" fontSize="sm" mt={8}>
-          Sobre o produto
-        </Text>
-        <Input
-          inputMode="numeric"
-          leftElement={<Text ml={4}>R$</Text>}
-          mt={4}
-          placeholder="Valor do produto"
+        <Controller
+          control={control}
+          name="name"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              placeholder="Título do anúncio"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.name?.message}
+            />
+          )}
         />
-        <Toggle />
+        <TextArea placeholder="Descrição do produto" />
+        <HStack>
+          <Radio.Group
+            flexDirection="row"
+            name="myRadioGroup"
+            accessibilityLabel="Tipo do produto"
+            value={value}
+            onChange={(nextValue) => {
+              setValue(nextValue);
+            }}
+            colorScheme="lightBlue"
+          >
+            <Radio value="isNew" my={1}>
+              Produto novo
+            </Radio>
+            <Radio value="notNew" my={1} ml={6}>
+              Produto usado
+            </Radio>
+          </Radio.Group>
+        </HStack>
+        <Text fontFamily="heading" fontSize="sm" mt={8}>
+          Sobre o produto
+        </Text>
+        <Controller
+          control={control}
+          name="price"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              inputMode="numeric"
+              leftElement={<Text ml={4}>R$</Text>}
+              mt={4}
+              placeholder="Valor do produto"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.price?.message}
+            />
+          )}
+        />
+        <VStack alignItems="flex-start">
+          <Text fontFamily="heading" fontSize="sm">
+            Aceito troca?
+          </Text>
+          <Switch
+            size="lg"
+            colorScheme="lightBlue"
+            isChecked={acceptTrade}
+            onToggle={() => setAcceptTrade(!acceptTrade)}
+          />
+        </VStack>
         <Text fontFamily="heading" fontSize="sm" mb={4}>
           Meios de pagamento aceitos
         </Text>
-        <CheckBox
-          name="Boleto"
-          onChange={setGroupValues}
-          value={groupValues}
-          aria-label="check box de boleto"
-        />
-        <CheckBox
-          name="Pix"
-          onChange={setGroupValues}
-          aria-label="check box de pix"
-        />
-        <CheckBox
-          name="Dinheiro"
-          onChange={setGroupValues}
-          aria-label="check box de dinheiro"
-        />
-        <CheckBox
-          name="Cartão de Crédito"
-          onChange={setGroupValues}
-          aria-label="check box de cartão de crédito"
-        />
-        <CheckBox
-          name="Depósito Bancário"
-          onChange={setGroupValues}
-          aria-label="check box de depósito bancário"
-        />
+        <Checkbox.Group
+          onChange={setPaymentMethods}
+          value={paymentMethods}
+          accessibilityLabel="choose numbers"
+        >
+          <CheckBox
+            name="Boleto"
+            onChange={setPaymentMethods}
+            // value={groupValues}
+            aria-label="check box de boleto"
+          />
+          <CheckBox
+            name="Pix"
+            onChange={setPaymentMethods}
+            aria-label="check box de pix"
+          />
+          <CheckBox
+            name="Dinheiro"
+            onChange={setPaymentMethods}
+            aria-label="check box de dinheiro"
+          />
+          <CheckBox
+            name="Cartão de Crédito"
+            onChange={setPaymentMethods}
+            aria-label="check box de cartão de crédito"
+          />
+          <CheckBox
+            name="Depósito Bancário"
+            onChange={setPaymentMethods}
+            aria-label="check box de depósito bancário"
+          />
+        </Checkbox.Group>
       </VStack>
       <HStack px={6} py={5} justifyContent="space-between">
         <Button
@@ -192,9 +252,8 @@ export function CreateAd() {
           titleColor="gray.200"
           color="gray.500"
         />
-
         <Button
-          onPress={handlePreviewScreen}
+          onPress={handleSubmit(handlePreviewScreen)}
           width={157}
           title="Avançar"
           titleColor="gray.700"
