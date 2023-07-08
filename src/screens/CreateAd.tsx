@@ -18,6 +18,7 @@ import {
   useToast,
   Radio,
   Switch,
+  useTheme,
 } from 'native-base';
 import { Plus } from 'phosphor-react-native';
 import { useState } from 'react';
@@ -27,6 +28,8 @@ import * as FileSystem from 'expo-file-system';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { AppError } from '@utils/appError';
+import { api } from '@services/api';
 
 type FormDataProps = {
   name: string;
@@ -54,8 +57,12 @@ export function CreateAd() {
   const [value, setValue] = useState('isNew');
   const [acceptTrade, setAcceptTrade] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState([]);
+  const [loading, setIsLoading] = useState(true);
+  const [sendingAd, setSendingAd] = useState(false);
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
+
+  const { colors } = useTheme();
 
   const toast = useToast();
 
@@ -112,8 +119,27 @@ export function CreateAd() {
   function handleGoBack() {
     navigation.goBack();
   }
-  function handlePreviewScreen(data: FormDataValidateProps) {
-    console.log(data);
+  async function handleRegisterNewAdd(data: FormDataValidateProps) {
+    try {
+      setSendingAd(true);
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+      await api.post('/products', config);
+    } catch (error) {
+      setIsLoading(false);
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível criar o anúncio. Tente novamente mais tarde.';
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      });
+    }
     // navigation.navigate('adPreview');
   }
 
@@ -214,34 +240,23 @@ export function CreateAd() {
         <Checkbox.Group
           onChange={setPaymentMethods}
           value={paymentMethods}
-          accessibilityLabel="choose numbers"
+          accessibilityLabel="chose payment methods"
         >
-          <CheckBox
-            name="Boleto"
-            onChange={setPaymentMethods}
-            // value={groupValues}
-            aria-label="check box de boleto"
-          />
-          <CheckBox
-            name="Pix"
-            onChange={setPaymentMethods}
-            aria-label="check box de pix"
-          />
-          <CheckBox
-            name="Dinheiro"
-            onChange={setPaymentMethods}
-            aria-label="check box de dinheiro"
-          />
-          <CheckBox
-            name="Cartão de Crédito"
-            onChange={setPaymentMethods}
-            aria-label="check box de cartão de crédito"
-          />
-          <CheckBox
-            name="Depósito Bancário"
-            onChange={setPaymentMethods}
-            aria-label="check box de depósito bancário"
-          />
+          <Checkbox value="boleto" my={1}>
+            <Text>Boleto</Text>
+          </Checkbox>
+          <Checkbox value="pix" my={1}>
+            <Text>Pix</Text>
+          </Checkbox>
+          <Checkbox value="dinheiro" my={1}>
+            <Text>Dinheiro</Text>
+          </Checkbox>
+          <Checkbox value="cartão-crédito" my={1}>
+            <Text>Cartão de Crédito</Text>
+          </Checkbox>
+          <Checkbox value="depósito bancário" my={1}>
+            <Text>Cartão de Crédito</Text>
+          </Checkbox>
         </Checkbox.Group>
       </VStack>
       <HStack px={6} py={5} justifyContent="space-between">
@@ -253,7 +268,8 @@ export function CreateAd() {
           color="gray.500"
         />
         <Button
-          onPress={handleSubmit(handlePreviewScreen)}
+          isLoading={sendingAd}
+          onPress={handleSubmit(handleRegisterNewAdd)}
           width={157}
           title="Avançar"
           titleColor="gray.700"
