@@ -43,18 +43,20 @@ type FormDataProps = {
 type FormDataValidateProps = {
   name: string;
   price: string;
+  description: string;
 };
 
 const createdAdSchema = yup.object({
   name: yup.string().required('Informe o nome do item.'),
   price: yup.string().required('Informe o preço do produto.'),
+  description: yup.string().required('Informe a descrição do produto.'),
 });
 
 export function CreateAd() {
   const [groupValues, setGroupValues] = useState([]);
   const [photoType, setPhotoType] = useState<any>();
   const [itemPhoto, setItemPhoto] = useState<String[]>([]);
-  const [value, setValue] = useState('isNew');
+  const [value, setValue] = useState(true);
   const [acceptTrade, setAcceptTrade] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [loading, setIsLoading] = useState(true);
@@ -122,14 +124,32 @@ export function CreateAd() {
   async function handleRegisterNewAdd(data: FormDataValidateProps) {
     try {
       setSendingAd(true);
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+
+      const treatPrice = data.price.replace(',', '.');
+      const price = Number(treatPrice) * 100;
+
+      const body = {
+        name: data.name,
+        description: data.description,
+        is_new: value,
+        price,
+        accept_trade: acceptTrade,
+        payment_methods: [paymentMethods],
       };
-      await api.post('/products', config);
+
+      console.log(body);
+      // const config = {
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      // };
+      const response = await api.post('/products', body);
+      if (response.status === 200) {
+        console.log('resposta', response);
+      } else {
+        console.log('Deu ruim');
+      }
     } catch (error) {
-      setIsLoading(false);
       const isAppError = error instanceof AppError;
       const title = isAppError
         ? error.message
@@ -139,11 +159,11 @@ export function CreateAd() {
         placement: 'top',
         bgColor: 'red.500',
       });
+    } finally {
+      setSendingAd(false);
     }
     // navigation.navigate('adPreview');
   }
-
-  console.log(paymentMethods);
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <VStack flex={1} bgColor="gray.600" px={6} py={9}>
@@ -185,15 +205,25 @@ export function CreateAd() {
             />
           )}
         />
-        <TextArea placeholder="Descrição do produto" />
+        <Controller
+          control={control}
+          name="description"
+          render={({ field: { onChange, value } }) => (
+            <TextArea
+              placeholder="Descrição do produto"
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+        />
         <HStack>
           <Radio.Group
             flexDirection="row"
             name="myRadioGroup"
             accessibilityLabel="Tipo do produto"
-            value={value}
+            value={value ? 'isNew' : 'notNew'}
             onChange={(nextValue) => {
-              setValue(nextValue);
+              setValue(nextValue === 'isNew' ? true : false);
             }}
             colorScheme="lightBlue"
           >
@@ -248,14 +278,14 @@ export function CreateAd() {
           <Checkbox value="pix" my={1}>
             <Text>Pix</Text>
           </Checkbox>
-          <Checkbox value="dinheiro" my={1}>
+          <Checkbox value="cash" my={1}>
             <Text>Dinheiro</Text>
           </Checkbox>
-          <Checkbox value="cartão-crédito" my={1}>
+          <Checkbox value="card" my={1}>
             <Text>Cartão de Crédito</Text>
           </Checkbox>
-          <Checkbox value="depósito bancário" my={1}>
-            <Text>Cartão de Crédito</Text>
+          <Checkbox value="deposit" my={1}>
+            <Text>Depósito</Text>
           </Checkbox>
         </Checkbox.Group>
       </VStack>
