@@ -82,7 +82,6 @@ export function CreateAd() {
   }
 
   async function handleItemPhotoSelect() {
-    console.log('Entrou aqui');
     try {
       const photoSelected = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -111,6 +110,7 @@ export function CreateAd() {
           ...prevState,
           photoSelected.assets[0].uri,
         ]);
+        console.log('teste', itemPhoto[0]);
         setPhotoType(photoSelected.assets[0].type);
       }
     } catch (error) {
@@ -134,22 +134,45 @@ export function CreateAd() {
         is_new: value,
         price,
         accept_trade: acceptTrade,
-        payment_methods: [paymentMethods],
+        payment_methods: paymentMethods,
       };
 
-      console.log(body);
-      // const config = {
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      // };
+      // console.log(body);
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+      // console.log(body);
+      // const image = photoType.map(item => {
+      //   const fileExtension = item.split('.').pop()
+      //   const imageFile = {
+      //     name: `${name}.${fileExtension}`.toLowerCase(),
+      //     uri: photoType,
+      //   type: `${photoType}/${fileExtension}`,
+      //   }
+
+      // })
       const response = await api.post('/products', body);
-      if (response.status === 200) {
-        console.log('resposta', response);
+      if (response.status === 201) {
+        console.log('product', response.data.id);
+        const formData = new FormData();
+        formData.append('images', itemPhoto.toString());
+        formData.append('product_id', response.data.id);
+
+        console.log('o que esta sendo enviado', formData);
+        const responseImages = await api.post(
+          '/products/images',
+          formData,
+          config,
+        );
+
+        console.log('envio das imagens', responseImages);
       } else {
         console.log('Deu ruim');
       }
     } catch (error) {
+      console.log(error);
       const isAppError = error instanceof AppError;
       const title = isAppError
         ? error.message
@@ -164,6 +187,8 @@ export function CreateAd() {
     }
     // navigation.navigate('adPreview');
   }
+
+  // console.log(itemPhoto);
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <VStack flex={1} bgColor="gray.600" px={6} py={9}>

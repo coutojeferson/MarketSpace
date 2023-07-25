@@ -156,6 +156,8 @@ export function SignUp() {
       });
     }
   }
+
+  console.log(userPhoto);
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
