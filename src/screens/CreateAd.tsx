@@ -30,6 +30,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AppError } from '@utils/appError';
 import { api } from '@services/api';
+import { useApp } from '@hooks/useApp';
 
 type FormDataProps = {
   name: string;
@@ -71,6 +72,8 @@ export function CreateAd() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   const { colors } = useTheme();
+
+  const { saveProductPreviewData } = useApp();
 
   const toast = useToast();
 
@@ -148,52 +151,57 @@ export function CreateAd() {
         price,
         accept_trade: acceptTrade,
         payment_methods: paymentMethods,
+        images: itemPhoto,
       };
 
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      };
+      saveProductPreviewData(body);
 
-      const response = await api.post('/products', body);
-      if (response.status === 201) {
-        const formData = new FormData();
-        itemPhoto.map((item) => {
-          formData.append('images', item as any);
-          return;
-        });
+      navigation.navigate('adPreview');
 
-        formData.append('product_id', response.data.id);
+      // const config = {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // };
 
-        const responseSendImages = await api.post(
-          '/products/images',
-          formData,
-          config,
-        );
+      // const response = await api.post('/products', body);
+      // if (response.status === 201) {
+      //   const formData = new FormData();
+      //   itemPhoto.map((item) => {
+      //     formData.append('images', item as any);
+      //     return;
+      //   });
 
-        if (responseSendImages.status === 201) {
-          navigation.navigate('adPreview');
-        } else {
-          const title =
-            'Não foi possível criar o anúncio. Tente novamente mais tarde.';
-          toast.show({
-            title,
-            placement: 'top',
-            bgColor: 'red.500',
-          });
-        }
+      //   formData.append('product_id', response.data.id);
 
-        console.log(responseSendImages);
-      } else {
-        const title =
-          'Não foi possível criar o anúncio. Tente novamente mais tarde.';
-        toast.show({
-          title,
-          placement: 'top',
-          bgColor: 'red.500',
-        });
-      }
+      //   const responseSendImages = await api.post(
+      //     '/products/images',
+      //     formData,
+      //     config,
+      //   );
+
+      //   if (responseSendImages.status === 201) {
+      //     navigation.navigate('adPreview');
+      //   } else {
+      //     const title =
+      //       'Não foi possível criar o anúncio. Tente novamente mais tarde.';
+      //     toast.show({
+      //       title,
+      //       placement: 'top',
+      //       bgColor: 'red.500',
+      //     });
+      //   }
+
+      //   console.log(responseSendImages);
+      // } else {
+      //   const title =
+      //     'Não foi possível criar o anúncio. Tente novamente mais tarde.';
+      //   toast.show({
+      //     title,
+      //     placement: 'top',
+      //     bgColor: 'red.500',
+      //   });
+      // }
     } catch (error) {
       console.log(error);
       const isAppError = error instanceof AppError;
