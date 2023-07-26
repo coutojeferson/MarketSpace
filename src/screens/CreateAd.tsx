@@ -30,6 +30,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AppError } from '@utils/appError';
 import { api } from '@services/api';
+import { useApp } from '@hooks/useApp';
 
 type FormDataProps = {
   name: string;
@@ -38,6 +39,12 @@ type FormDataProps = {
   price: string;
   accept_trade: boolean;
   payment_methods: string[];
+};
+
+type ImageProps = {
+  name: string;
+  uri: string;
+  type: string;
 };
 
 type FormDataValidateProps = {
@@ -55,7 +62,7 @@ const createdAdSchema = yup.object({
 export function CreateAd() {
   const [groupValues, setGroupValues] = useState([]);
   const [photoType, setPhotoType] = useState<any>();
-  const [itemPhoto, setItemPhoto] = useState<String[]>([]);
+  const [itemPhoto, setItemPhoto] = useState<ImageProps[]>([]);
   const [value, setValue] = useState(true);
   const [acceptTrade, setAcceptTrade] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -65,6 +72,8 @@ export function CreateAd() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   const { colors } = useTheme();
+
+  const { saveProductPreviewData } = useApp();
 
   const toast = useToast();
 
@@ -77,7 +86,7 @@ export function CreateAd() {
   });
 
   function handleRemovePhoto(uri: string) {
-    const remainingPhotos = itemPhoto.filter((photos) => photos !== uri);
+    const remainingPhotos = itemPhoto.filter((photos) => photos.uri !== uri);
     setItemPhoto([...remainingPhotos]);
   }
 
@@ -106,11 +115,17 @@ export function CreateAd() {
             bgColor: 'red.500',
           });
         }
-        setItemPhoto((prevState) => [
-          ...prevState,
-          photoSelected.assets[0].uri,
-        ]);
-        console.log('teste', itemPhoto[0]);
+
+        // console.log(body);
+        const fileExtension = photoSelected.assets[0].uri.split('.').pop();
+        const photoFile = {
+          name: `${fileExtension}`.toLowerCase(),
+          uri: photoSelected.assets[0].uri,
+          type: `${photoSelected.assets[0].type}/${fileExtension}`,
+        } as any;
+
+        setItemPhoto((prevState) => [...prevState, photoFile]);
+        // console.log('teste', photoFile);
         setPhotoType(photoSelected.assets[0].type);
       }
     } catch (error) {
@@ -121,6 +136,7 @@ export function CreateAd() {
   function handleGoBack() {
     navigation.goBack();
   }
+
   async function handleRegisterNewAdd(data: FormDataValidateProps) {
     try {
       setSendingAd(true);
@@ -135,42 +151,57 @@ export function CreateAd() {
         price,
         accept_trade: acceptTrade,
         payment_methods: paymentMethods,
+        images: itemPhoto,
       };
 
-      // console.log(body);
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      };
-      // console.log(body);
-      // const image = photoType.map(item => {
-      //   const fileExtension = item.split('.').pop()
-      //   const imageFile = {
-      //     name: `${name}.${fileExtension}`.toLowerCase(),
-      //     uri: photoType,
-      //   type: `${photoType}/${fileExtension}`,
+      saveProductPreviewData(body);
+
+      navigation.navigate('adPreview');
+
+      // const config = {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // };
+
+      // const response = await api.post('/products', body);
+      // if (response.status === 201) {
+      //   const formData = new FormData();
+      //   itemPhoto.map((item) => {
+      //     formData.append('images', item as any);
+      //     return;
+      //   });
+
+      //   formData.append('product_id', response.data.id);
+
+      //   const responseSendImages = await api.post(
+      //     '/products/images',
+      //     formData,
+      //     config,
+      //   );
+
+      //   if (responseSendImages.status === 201) {
+      //     navigation.navigate('adPreview');
+      //   } else {
+      //     const title =
+      //       'Não foi possível criar o anúncio. Tente novamente mais tarde.';
+      //     toast.show({
+      //       title,
+      //       placement: 'top',
+      //       bgColor: 'red.500',
+      //     });
       //   }
 
-      // })
-      const response = await api.post('/products', body);
-      if (response.status === 201) {
-        console.log('product', response.data.id);
-        const formData = new FormData();
-        formData.append('images', itemPhoto.toString());
-        formData.append('product_id', response.data.id);
-
-        console.log('o que esta sendo enviado', formData);
-        const responseImages = await api.post(
-          '/products/images',
-          formData,
-          config,
-        );
-
-        console.log('envio das imagens', responseImages);
-      } else {
-        console.log('Deu ruim');
-      }
+      //   console.log(responseSendImages);
+      // } else {
+      //   const title =
+      //     'Não foi possível criar o anúncio. Tente novamente mais tarde.';
+      //   toast.show({
+      //     title,
+      //     placement: 'top',
+      //     bgColor: 'red.500',
+      //   });
+      // }
     } catch (error) {
       console.log(error);
       const isAppError = error instanceof AppError;
@@ -188,7 +219,6 @@ export function CreateAd() {
     // navigation.navigate('adPreview');
   }
 
-  // console.log(itemPhoto);
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <VStack flex={1} bgColor="gray.600" px={6} py={9}>
@@ -203,7 +233,7 @@ export function CreateAd() {
           <HStack>
             {itemPhoto.map((item) => (
               <BoxSelectImage
-                uri={item}
+                uri={item.uri}
                 onRemovePhoto={(uri) => handleRemovePhoto(uri)}
               />
             ))}

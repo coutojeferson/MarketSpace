@@ -28,7 +28,7 @@ export function Home() {
   return (
     <VStack flex={1} px={6} bg="gray.600">
       <HStack mb={8} pt={12} alignItems="center" flexDirection="row">
-        <Avatar />
+        <Avatar source={{ uri: user.avatar }} />
         <VStack ml={3} flex={1}>
           <Text color="gray.100" fontSize="md" fontFamily="body">
             Boas vindas,
