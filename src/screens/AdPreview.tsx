@@ -1,7 +1,7 @@
 import { Avatar } from '@components/Avatar';
 import { Carousel } from '@components/Caroulsel';
 import { Button } from '@components/Button';
-import { VStack, Text, HStack, ScrollView } from 'native-base';
+import { VStack, Text, HStack, ScrollView, useToast } from 'native-base';
 import TagUsedSecondary from '@assets/usedSecondary.svg';
 import TagNewSecondary from '@assets/newSecondary.svg';
 import {
@@ -17,19 +17,67 @@ import { useNavigation } from '@react-navigation/native';
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 import { useApp } from '@hooks/useApp';
 import { useAuth } from '@hooks/useAuth';
+import { AppError } from '@utils/appError';
+import { api } from '@services/api';
+import { useState } from 'react';
 
 export function AdPreview() {
+  const [isLoading, setIsloading] = useState(false);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   const { productPreviewData } = useApp();
   const { user } = useAuth();
+  const toast = useToast();
   const price = productPreviewData.price / 100;
 
   function handleGoBack() {
     navigation.goBack();
   }
-  function handlePublish() {
-    navigation.navigate('myAdDetail');
+  async function handlePublishNewAdd() {
+    try {
+      setIsloading(true);
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+
+      const body = {
+        name: productPreviewData.name,
+        description: productPreviewData.description,
+        is_new: productPreviewData.is_new,
+        price: productPreviewData.price,
+        accept_trade: productPreviewData.accept_trade,
+        payment_methods: productPreviewData.payment_methods,
+      };
+
+      const response = await api.post('/products', body);
+
+      const formData = new FormData();
+      productPreviewData.images.map((item) => {
+        formData.append('images', item as any);
+        return;
+      });
+
+      formData.append('product_id', response.data.id);
+
+      await api.post('/products/images', formData, config);
+
+      navigation.navigate('myAdDetail');
+    } catch (error) {
+      console.log(error);
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível criar o anúncio. Tente novamente mais tarde.';
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      });
+    } finally {
+      setIsloading(false);
+    }
   }
 
   return (
@@ -124,7 +172,8 @@ export function AdPreview() {
             leftIcon={<ArrowLeft size={16} color="#3E3A40" />}
           />
           <Button
-            onPress={handlePublish}
+            isLoading={isLoading}
+            onPress={handlePublishNewAdd}
             width={157}
             title="Publicar"
             titleColor="gray.700"

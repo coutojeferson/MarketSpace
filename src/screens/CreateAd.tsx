@@ -66,12 +66,7 @@ export function CreateAd() {
   const [value, setValue] = useState(true);
   const [acceptTrade, setAcceptTrade] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [loading, setIsLoading] = useState(true);
-  const [sendingAd, setSendingAd] = useState(false);
-
   const navigation = useNavigation<AppNavigatorRoutesProps>();
-
-  const { colors } = useTheme();
 
   const { saveProductPreviewData } = useApp();
 
@@ -115,8 +110,6 @@ export function CreateAd() {
             bgColor: 'red.500',
           });
         }
-
-        // console.log(body);
         const fileExtension = photoSelected.assets[0].uri.split('.').pop();
         const photoFile = {
           name: `${fileExtension}`.toLowerCase(),
@@ -125,7 +118,6 @@ export function CreateAd() {
         } as any;
 
         setItemPhoto((prevState) => [...prevState, photoFile]);
-        // console.log('teste', photoFile);
         setPhotoType(photoSelected.assets[0].type);
       }
     } catch (error) {
@@ -138,85 +130,20 @@ export function CreateAd() {
   }
 
   async function handleRegisterNewAdd(data: FormDataValidateProps) {
-    try {
-      setSendingAd(true);
+    const treatPrice = data.price.replace(',', '.');
+    const price = Number(treatPrice) * 100;
 
-      const treatPrice = data.price.replace(',', '.');
-      const price = Number(treatPrice) * 100;
-
-      const body = {
-        name: data.name,
-        description: data.description,
-        is_new: value,
-        price,
-        accept_trade: acceptTrade,
-        payment_methods: paymentMethods,
-        images: itemPhoto,
-      };
-
-      saveProductPreviewData(body);
-
-      navigation.navigate('adPreview');
-
-      // const config = {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //   },
-      // };
-
-      // const response = await api.post('/products', body);
-      // if (response.status === 201) {
-      //   const formData = new FormData();
-      //   itemPhoto.map((item) => {
-      //     formData.append('images', item as any);
-      //     return;
-      //   });
-
-      //   formData.append('product_id', response.data.id);
-
-      //   const responseSendImages = await api.post(
-      //     '/products/images',
-      //     formData,
-      //     config,
-      //   );
-
-      //   if (responseSendImages.status === 201) {
-      //     navigation.navigate('adPreview');
-      //   } else {
-      //     const title =
-      //       'Não foi possível criar o anúncio. Tente novamente mais tarde.';
-      //     toast.show({
-      //       title,
-      //       placement: 'top',
-      //       bgColor: 'red.500',
-      //     });
-      //   }
-
-      //   console.log(responseSendImages);
-      // } else {
-      //   const title =
-      //     'Não foi possível criar o anúncio. Tente novamente mais tarde.';
-      //   toast.show({
-      //     title,
-      //     placement: 'top',
-      //     bgColor: 'red.500',
-      //   });
-      // }
-    } catch (error) {
-      console.log(error);
-      const isAppError = error instanceof AppError;
-      const title = isAppError
-        ? error.message
-        : 'Não foi possível criar o anúncio. Tente novamente mais tarde.';
-      toast.show({
-        title,
-        placement: 'top',
-        bgColor: 'red.500',
-      });
-    } finally {
-      setSendingAd(false);
-    }
-    // navigation.navigate('adPreview');
+    const body = {
+      name: data.name,
+      description: data.description,
+      is_new: value,
+      price,
+      accept_trade: acceptTrade,
+      payment_methods: paymentMethods,
+      images: itemPhoto,
+    };
+    saveProductPreviewData(body);
+    navigation.navigate('adPreview');
   }
 
   return (
@@ -353,7 +280,6 @@ export function CreateAd() {
           color="gray.500"
         />
         <Button
-          isLoading={sendingAd}
           onPress={handleSubmit(handleRegisterNewAdd)}
           width={157}
           title="Avançar"
