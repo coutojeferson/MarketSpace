@@ -110,9 +110,18 @@ export function CreateAd() {
             bgColor: 'red.500',
           });
         }
+
+        const parts = photoSelected.assets[0].uri.split('/');
+
+        // Pegue o último elemento do array resultante, que deve conter a parte desejada
+        const extractedPartUri = parts[parts.length - 1];
+
+        console.log(parts);
+
         const fileExtension = photoSelected.assets[0].uri.split('.').pop();
         const photoFile = {
-          name: `${fileExtension}`.toLowerCase(),
+          // `${name}.${fileExtension}`.toLowerCase(),
+          name: `${extractedPartUri}`.toLowerCase(),
           uri: photoSelected.assets[0].uri,
           type: `${photoSelected.assets[0].type}/${fileExtension}`,
         } as any;

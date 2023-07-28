@@ -63,7 +63,7 @@ export function AdPreview() {
 
       await api.post('/products/images', formData, config);
 
-      navigation.navigate('myAdDetail');
+      navigation.navigate('myAdDetail', response.data.id);
     } catch (error) {
       console.log(error);
       const isAppError = error instanceof AppError;
