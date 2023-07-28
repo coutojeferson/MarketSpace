@@ -18,7 +18,9 @@ import { useAuth } from '@hooks/useAuth';
 type AppRoutes = {
   home: undefined;
   myAds: undefined;
-  myAdDetail: undefined;
+  myAdDetail: {
+    id: string;
+  };
   adDetails: undefined;
   adPreview: undefined;
   createAd: undefined;

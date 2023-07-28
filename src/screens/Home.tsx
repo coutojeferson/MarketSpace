@@ -25,6 +25,11 @@ export function Home() {
   function handleCreateAd() {
     navigation.navigate('createAd');
   }
+  const id = '8532b7e9-1f39-4dcb-85ac-7dc2e10c5a15';
+
+  function handleMyAds() {
+    navigation.navigate('myAdDetail', { id });
+  }
   return (
     <VStack flex={1} px={6} bg="gray.600">
       <HStack mb={8} pt={12} alignItems="center" flexDirection="row">
@@ -49,7 +54,7 @@ export function Home() {
       <Text color="gray.300" fontSize="md" fontFamily="body" mb={4}>
         Seus produtos anunciados para venda
       </Text>
-      <ActiveAds amountActiveAds={4} />
+      <ActiveAds amountActiveAds={4} onPress={handleMyAds} />
       <Text color="gray.300" fontSize="md" fontFamily="body" mt={8} mb={4}>
         Compre produtos variados
       </Text>
