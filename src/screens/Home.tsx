@@ -84,12 +84,12 @@ export function Home() {
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <HStack flex={1} flexWrap="wrap" justifyContent="space-between">
-          <CardItem
+          {/* <CardItem
             statusItem="used"
             onPress={() => navigation.navigate('adDetails')}
           />
           <CardItem statusItem="new" />
-          <CardItem statusItem="used" />
+          <CardItem statusItem="used" /> */}
           {/* <CardItem statusItem="new" />
           <CardItem statusItem="used" />
           <CardItem statusItem="used" />
