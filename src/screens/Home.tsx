@@ -28,7 +28,7 @@ export function Home() {
   const id = '8532b7e9-1f39-4dcb-85ac-7dc2e10c5a15';
 
   function handleMyAds() {
-    navigation.navigate('myAdDetail', { id });
+    navigation.navigate('myAds');
   }
   return (
     <VStack flex={1} px={6} bg="gray.600">
