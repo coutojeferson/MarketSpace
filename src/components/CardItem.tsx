@@ -4,34 +4,50 @@ import BackgroundItem from '@assets/item.png';
 import TagNew from '@assets/new.svg';
 import TagUsed from '@assets/used.svg';
 import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { api } from '@services/api';
 
 type Tag = 'new' | 'used';
+
+type ImageProps = {
+  id: string;
+  path: string;
+};
 
 type CardItemProps = TouchableOpacityProps & {
   statusItem: Tag;
   avatar?: boolean;
   active?: boolean;
+  image: Array<ImageProps>;
+  name: string;
+  price: number;
 };
 
 export function CardItem({
   statusItem,
   avatar = true,
   active = true,
+  image,
+  name,
+  price,
   ...rest
 }: CardItemProps) {
+  const priceProduct = price / 100;
+
   return (
-    <VStack minWidth={133} maxWidth={175} flex={1} mb={6}>
+    <VStack minWidth={150} maxWidth={200} flex={1} mb={6} mx={1}>
       <TouchableOpacity {...rest}>
         <VStack h={100}>
           <Image
+            resizeMode="cover"
             width="100%"
             position="absolute"
-            source={BackgroundItem}
+            source={{ uri: `${api.defaults.baseURL}/images/${image[0].path}` }}
             alt="Imagem de fundo do card"
             h={100}
             borderRadius="md"
             opacity={active ? 1 : 0.7}
           />
+
           <HStack
             flex={1}
             p={1}
@@ -65,7 +81,7 @@ export function CardItem({
             mb={1}
             color={active ? 'gray.200' : 'gray.400'}
           >
-            Tênis vermelho
+            {name}
           </Text>
           <Text
             fontSize={16}
@@ -73,7 +89,8 @@ export function CardItem({
             lineHeight={15}
             color={active ? 'gray.100' : 'gray.400'}
           >
-            <Text fontSize={12}>R$</Text> 59,90
+            <Text fontSize={12}>R$</Text>{' '}
+            {priceProduct.toFixed(2).replace('.', ',')}
           </Text>
         </VStack>
       </TouchableOpacity>

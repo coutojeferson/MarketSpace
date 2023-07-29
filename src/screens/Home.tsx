@@ -28,7 +28,7 @@ export function Home() {
   const id = '8532b7e9-1f39-4dcb-85ac-7dc2e10c5a15';
 
   function handleMyAds() {
-    navigation.navigate('myAdDetail', { id });
+    navigation.navigate('myAds');
   }
   return (
     <VStack flex={1} px={6} bg="gray.600">
@@ -84,12 +84,12 @@ export function Home() {
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <HStack flex={1} flexWrap="wrap" justifyContent="space-between">
-          <CardItem
+          {/* <CardItem
             statusItem="used"
             onPress={() => navigation.navigate('adDetails')}
           />
           <CardItem statusItem="new" />
-          <CardItem statusItem="used" />
+          <CardItem statusItem="used" /> */}
           {/* <CardItem statusItem="new" />
           <CardItem statusItem="used" />
           <CardItem statusItem="used" />

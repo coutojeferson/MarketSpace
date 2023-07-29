@@ -13,6 +13,8 @@ type AppContextProviderProps = {
 };
 
 type ImageProductProps = {
+  id: string;
+  path: string;
   name: string;
   uri: string;
   type: string;

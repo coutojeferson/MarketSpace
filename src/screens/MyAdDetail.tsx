@@ -23,10 +23,14 @@ import {
   Tag,
   TrashSimple,
 } from 'phosphor-react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 import { Header } from '@components/Header';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { AppError } from '@utils/appError';
 import { api } from '@services/api';
@@ -36,8 +40,10 @@ type RouteParams = {
 };
 
 type ImageProps = {
+  id: string;
   name: string;
   uri: string;
+  path: string;
   type: string;
 };
 type PaymentMethodsProps = {
@@ -76,6 +82,10 @@ export function MyAdDetail() {
 
   const price = Number(data?.price) / 100;
 
+  function handleGoBack() {
+    navigation.goBack();
+  }
+
   function handleEditAd() {
     navigation.navigate('editMyAdd');
   }
@@ -85,6 +95,7 @@ export function MyAdDetail() {
 
   async function getProductById() {
     try {
+      console.log('Olha o id ai', id);
       const response = await api.get(`/products/${id}`);
       setActiveAd(response.data.is_active);
       setData(response.data);
@@ -129,15 +140,17 @@ export function MyAdDetail() {
     }
   }
 
-  useEffect(() => {
-    getProductById();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getProductById();
+    }, []),
+  );
 
   // console.log(data);
   return (
     <VStack flex={1} bg="gray.600">
       <HStack px={6} mt={9} mb={3} justifyContent="space-between">
-        <Header />
+        <Header onPress={handleGoBack} />
         <TouchableOpacity onPress={handleEditAd}>
           <PencilSimpleLine />
         </TouchableOpacity>
