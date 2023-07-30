@@ -161,9 +161,6 @@ export function MyAdDetail() {
     }, []),
   );
 
-  // console.log('normal', data?.user.name);
-
-  // console.log('Type', type.user.name);
   return (
     <VStack flex={1} bg="gray.600">
       <HStack px={6} mt={9} mb={3} justifyContent="space-between">

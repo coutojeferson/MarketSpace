@@ -36,7 +36,6 @@ export function AdUpdatePreview() {
 
   async function handleUpdateAdd() {
     try {
-      console.log('Entrou aqui');
       setIsloading(true);
       const config = {
         headers: {
