@@ -1,8 +1,10 @@
 import { ReactNode, createContext, useState } from 'react';
 
 export type AppContextDataProps = {
-  productPreviewData: ProductPreviewDataProps;
-  saveProductPreviewData: (productData: ProductPreviewDataProps) => void;
+  productPreviewData: ProductDataProps;
+  productDataToUpdate: ProductDataProps;
+  saveProductPreviewData: (productData: ProductDataProps) => void;
+  saveProductDataToUpdate: (productData: ProductDataProps) => void;
 };
 export const AppContext = createContext<AppContextDataProps>(
   {} as AppContextDataProps,
@@ -20,7 +22,8 @@ type ImageProductProps = {
   type: string;
 };
 
-type ProductPreviewDataProps = {
+type ProductDataProps = {
+  id?: string;
   name: string;
   description: string;
   is_new: boolean;
@@ -28,21 +31,31 @@ type ProductPreviewDataProps = {
   accept_trade: boolean;
   payment_methods: any;
   images: Array<ImageProductProps>;
+  listImagesToRemove?: String[];
 };
 
 export function AppContextProvider({ children }: AppContextProviderProps) {
   const [productPreviewData, setProductPreviewData] =
-    useState<ProductPreviewDataProps>({} as ProductPreviewDataProps);
+    useState<ProductDataProps>({} as ProductDataProps);
 
-  function saveProductPreviewData(productData: ProductPreviewDataProps) {
+  const [productDataToUpdate, setProductDataToUpdate] =
+    useState<ProductDataProps>({} as ProductDataProps);
+
+  function saveProductPreviewData(productData: ProductDataProps) {
     setProductPreviewData(productData);
+  }
+
+  function saveProductDataToUpdate(productData: ProductDataProps) {
+    setProductDataToUpdate(productData);
   }
 
   return (
     <AppContext.Provider
       value={{
         productPreviewData,
+        productDataToUpdate,
         saveProductPreviewData,
+        saveProductDataToUpdate,
       }}
     >
       {children}
