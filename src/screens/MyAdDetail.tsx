@@ -34,6 +34,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { AppError } from '@utils/appError';
 import { api } from '@services/api';
+import { useApp } from '@hooks/useApp';
+import { Loading } from '@components/Loading';
 
 type RouteParams = {
   id: string;
@@ -73,12 +75,14 @@ export function MyAdDetail() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeAd, setActiveAd] = useState(true);
   const [data, setData] = useState<DataProps>();
+  const [type, setType] = useState<DataProps>({} as DataProps);
   const [images, setImages] = useState<ImageProps[]>();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   const route = useRoute();
   const toast = useToast();
-  const id = route.params as RouteParams;
+  const { saveProductDataToUpdate } = useApp();
+  const { id } = route.params as RouteParams;
 
   const price = Number(data?.price) / 100;
 
@@ -86,19 +90,30 @@ export function MyAdDetail() {
     navigation.goBack();
   }
 
-  function handleEditAd() {
+  function handleEditAd(dataToUpdate: DataProps) {
+    const productData = {
+      id,
+      name: dataToUpdate.name,
+      description: dataToUpdate.description,
+      is_new: dataToUpdate.is_new,
+      price: data?.price,
+      accept_trade: dataToUpdate.accept_trade,
+      payment_methods: dataToUpdate.payment_methods,
+      images: dataToUpdate.product_images,
+    };
+    saveProductDataToUpdate(productData);
     navigation.navigate('editMyAdd');
   }
+
   function handleDeleteMyAd() {
     navigation.navigate('adPreview');
   }
 
   async function getProductById() {
     try {
-      console.log('Olha o id ai', id);
       const response = await api.get(`/products/${id}`);
       setActiveAd(response.data.is_active);
-      setData(response.data);
+      setData(response.data ? response.data : '');
     } catch (error) {
       const isAppError = error instanceof AppError;
       const title = isAppError
@@ -146,115 +161,121 @@ export function MyAdDetail() {
     }, []),
   );
 
-  // console.log(data);
+  // console.log('normal', data?.user.name);
+
+  // console.log('Type', type.user.name);
   return (
     <VStack flex={1} bg="gray.600">
       <HStack px={6} mt={9} mb={3} justifyContent="space-between">
         <Header onPress={handleGoBack} />
-        <TouchableOpacity onPress={handleEditAd}>
+        <TouchableOpacity onPress={() => handleEditAd(data)}>
           <PencilSimpleLine />
         </TouchableOpacity>
       </HStack>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <VStack
-          alignItems="center"
-          justifyContent="center"
-          bgColor={activeAd ? 'gray.600' : 'gray.100'}
-        >
-          <Carousel active={data?.is_active} images={data?.product_images} />
-
-          <Text
-            fontFamily="heading"
-            color="gray.700"
-            position="absolute"
-            textTransform="uppercase"
+      {data ? (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <VStack
+            alignItems="center"
+            justifyContent="center"
+            bgColor={activeAd ? 'gray.600' : 'gray.100'}
           >
-            {activeAd ? '' : 'Anúncio desativado'}
-          </Text>
-        </VStack>
-        <VStack px={6} mb={5}>
-          <HStack alignItems="center" my={6}>
-            <Avatar width={6} height={6} />
-            <Text ml={2} fontFamily="body" color="gray.100" fontSize="sm">
-              {data?.user.name}
-            </Text>
-          </HStack>
-          {data?.is_new ? <TagNewSecondary /> : <TagUsedSecondary />}
-          <HStack alignItems="baseline" justifyContent="space-between" mt={2}>
-            <Text fontFamily="heading" fontSize="lg" color="gray.100">
-              {data?.name}
-            </Text>
-            <Text color="blue.500" fontFamily="heading">
-              <Text fontSize="sm">R$ </Text>
-              <Text fontSize="lg">{price.toFixed(2).replace('.', ',')}</Text>
-            </Text>
-          </HStack>
-          <Text mt={1} color="gray.200" fontSize="sm" fontFamily="body">
-            {data?.description}
-          </Text>
-          <Text mt={6} fontSize="sm">
-            <Text fontFamily="heading">Aceita troca? </Text>
-            <Text>{data?.accept_trade ? 'Sim' : 'Não'}</Text>
-          </Text>
-          <Text mt={3} fontFamily="heading">
-            Meios de pagamento:
-          </Text>
-          {data?.payment_methods.map((item: PaymentMethodsProps) => (
-            <>
-              {item.key === 'boleto' && (
-                <HStack mt={2}>
-                  <Barcode />
-                  <Text ml={2}>Boleto</Text>
-                </HStack>
-              )}
-              {item.key === 'pix' && (
-                <HStack mt={2}>
-                  <QrCode />
-                  <Text ml={2}>Pix</Text>
-                </HStack>
-              )}
-              {item.key === 'cash' && (
-                <HStack mt={2}>
-                  <Money />
-                  <Text ml={2}>Dinheiro</Text>
-                </HStack>
-              )}
-              {item.key === 'card' && (
-                <HStack mt={2}>
-                  <CreditCard />
-                  <Text ml={2}>Cartão de Crédito</Text>
-                </HStack>
-              )}
-              {item.key === 'deposit' && (
-                <HStack mt={2}>
-                  <Bank />
-                  <Text ml={2}>Depósito Bancário</Text>
-                </HStack>
-              )}
-            </>
-          ))}
-        </VStack>
-        <VStack flex={1} px={6} py={5}>
-          <Button
-            isLoading={isLoading}
-            mb={2}
-            width="100%"
-            title={activeAd ? 'Desativar anúncio' : 'Reativar anúncio'}
-            titleColor="gray.700"
-            color={activeAd ? 'gray.100' : 'blue.500'}
-            leftIcon={<Power size={16} color="#EDECEE" />}
-            onPress={updatedVisibility}
-          />
+            <Carousel active={data?.is_active} images={data?.product_images} />
 
-          <Button
-            width="100%"
-            title="Excluir anúncio"
-            titleColor="gray.200"
-            color="gray.500"
-            leftIcon={<TrashSimple size={16} color="#5F5B62" />}
-          />
-        </VStack>
-      </ScrollView>
+            <Text
+              fontFamily="heading"
+              color="gray.700"
+              position="absolute"
+              textTransform="uppercase"
+            >
+              {activeAd ? '' : 'Anúncio desativado'}
+            </Text>
+          </VStack>
+          <VStack px={6} mb={5}>
+            <HStack alignItems="center" my={6}>
+              <Avatar width={6} height={6} />
+              <Text ml={2} fontFamily="body" color="gray.100" fontSize="sm">
+                {data.user.name}
+              </Text>
+            </HStack>
+            {data?.is_new ? <TagNewSecondary /> : <TagUsedSecondary />}
+            <HStack alignItems="baseline" justifyContent="space-between" mt={2}>
+              <Text fontFamily="heading" fontSize="lg" color="gray.100">
+                {data?.name}
+              </Text>
+              <Text color="blue.500" fontFamily="heading">
+                <Text fontSize="sm">R$ </Text>
+                <Text fontSize="lg">{price.toFixed(2).replace('.', ',')}</Text>
+              </Text>
+            </HStack>
+            <Text mt={1} color="gray.200" fontSize="sm" fontFamily="body">
+              {data?.description}
+            </Text>
+            <Text mt={6} fontSize="sm">
+              <Text fontFamily="heading">Aceita troca? </Text>
+              <Text>{data?.accept_trade ? 'Sim' : 'Não'}</Text>
+            </Text>
+            <Text mt={3} fontFamily="heading">
+              Meios de pagamento:
+            </Text>
+            {data?.payment_methods.map((item: PaymentMethodsProps) => (
+              <>
+                {item.key === 'boleto' && (
+                  <HStack mt={2}>
+                    <Barcode />
+                    <Text ml={2}>Boleto</Text>
+                  </HStack>
+                )}
+                {item.key === 'pix' && (
+                  <HStack mt={2}>
+                    <QrCode />
+                    <Text ml={2}>Pix</Text>
+                  </HStack>
+                )}
+                {item.key === 'cash' && (
+                  <HStack mt={2}>
+                    <Money />
+                    <Text ml={2}>Dinheiro</Text>
+                  </HStack>
+                )}
+                {item.key === 'card' && (
+                  <HStack mt={2}>
+                    <CreditCard />
+                    <Text ml={2}>Cartão de Crédito</Text>
+                  </HStack>
+                )}
+                {item.key === 'deposit' && (
+                  <HStack mt={2}>
+                    <Bank />
+                    <Text ml={2}>Depósito Bancário</Text>
+                  </HStack>
+                )}
+              </>
+            ))}
+          </VStack>
+          <VStack flex={1} px={6} py={5}>
+            <Button
+              isLoading={isLoading}
+              mb={2}
+              width="100%"
+              title={activeAd ? 'Desativar anúncio' : 'Reativar anúncio'}
+              titleColor="gray.700"
+              color={activeAd ? 'gray.100' : 'blue.500'}
+              leftIcon={<Power size={16} color="#EDECEE" />}
+              onPress={updatedVisibility}
+            />
+
+            <Button
+              width="100%"
+              title="Excluir anúncio"
+              titleColor="gray.200"
+              color="gray.500"
+              leftIcon={<TrashSimple size={16} color="#5F5B62" />}
+            />
+          </VStack>
+        </ScrollView>
+      ) : (
+        <Loading />
+      )}
     </VStack>
   );
 }

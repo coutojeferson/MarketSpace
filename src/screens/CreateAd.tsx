@@ -42,8 +42,10 @@ type FormDataProps = {
 };
 
 type ImageProps = {
+  id: string;
   name: string;
   uri: string;
+  path: string;
   type: string;
 };
 

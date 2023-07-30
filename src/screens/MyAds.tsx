@@ -55,8 +55,7 @@ export function MyAds() {
   }
 
   function handleAdDetails(id: string) {
-    console.log('id que to mandando:', id);
-    navigation.navigate('myAdDetail', { id: id });
+    navigation.navigate('myAdDetail', { id });
   }
 
   async function getProducts() {
