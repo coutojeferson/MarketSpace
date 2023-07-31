@@ -16,6 +16,7 @@ type ImageProps = {
 type CardItemProps = TouchableOpacityProps & {
   statusItem: Tag;
   avatar?: boolean;
+  avatarImage: string;
   active?: boolean;
   image: Array<ImageProps>;
   name: string;
@@ -25,6 +26,7 @@ type CardItemProps = TouchableOpacityProps & {
 export function CardItem({
   statusItem,
   avatar = true,
+  avatarImage,
   active = true,
   image,
   name,
@@ -55,7 +57,14 @@ export function CardItem({
           >
             {avatar && (
               <Box>
-                <Avatar h={6} w={6} borderColor="gray.700" />
+                <Avatar
+                  h={6}
+                  w={6}
+                  borderColor="gray.700"
+                  source={{
+                    uri: `${api.defaults.baseURL}/images/${avatarImage}`,
+                  }}
+                />
               </Box>
             )}
             <Box opacity={active ? 1 : 0.7}>

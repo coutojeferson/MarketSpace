@@ -22,7 +22,9 @@ type AppRoutes = {
   myAdDetail: {
     id: string;
   };
-  adDetails: undefined;
+  adDetails: {
+    id: string;
+  };
   adPreview: undefined;
   adUpdatePreview: undefined;
   createAd: undefined;
