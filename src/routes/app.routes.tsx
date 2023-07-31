@@ -15,10 +15,18 @@ import { EditMyAd } from '@screens/EditMyAd';
 import { House, Tag, SignOut as SignOutIcon } from 'phosphor-react-native';
 import { Platform } from 'react-native';
 import { useAuth } from '@hooks/useAuth';
+import {
+  NativeStackNavigationProp,
+  createNativeStackNavigator,
+} from '@react-navigation/native-stack';
 
-type AppRoutes = {
+type AppRoutesTabs = {
   home: undefined;
   myAds: undefined;
+  signOut: undefined;
+};
+
+type AppRoutesStack = {
   myAdDetail: {
     id: string;
   };
@@ -29,14 +37,39 @@ type AppRoutes = {
   adUpdatePreview: undefined;
   createAd: undefined;
   editMyAdd: undefined;
-  signOut: undefined;
+  homePage: PropsTabs;
 };
 
-export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
+type PropsTabs = {
+  home: undefined;
+};
 
-const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>();
+export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutesTabs> &
+  NativeStackNavigationProp<AppRoutesStack>;
+
+const { Navigator, Screen } = createBottomTabNavigator<AppRoutesTabs>();
+const { Navigator: StackNavigator, Screen: StackScreen } =
+  createNativeStackNavigator<AppRoutesStack>();
 
 export function AppRoutes() {
+  return (
+    <StackNavigator screenOptions={{ headerShown: false }}>
+      <StackScreen
+        name="homePage"
+        component={HomePage}
+        options={{ headerShown: false }}
+      />
+      <StackScreen name="adDetails" component={AdDetails} />
+      <StackScreen name="adPreview" component={AdPreview} />
+      <StackScreen name="adUpdatePreview" component={AdUpdatePreview} />
+      <StackScreen name="createAd" component={CreateAd} />
+      <StackScreen name="editMyAdd" component={EditMyAd} />
+      <StackScreen name="myAdDetail" component={MyAdDetail} />
+    </StackNavigator>
+  );
+}
+
+function HomePage() {
   const { signOut } = useAuth();
   const { sizes, colors } = useTheme();
 
@@ -69,48 +102,6 @@ export function AppRoutes() {
         component={MyAds}
         options={{
           tabBarIcon: ({ color }) => <Tag color={color} size={iconSize} />,
-        }}
-      />
-      <Screen
-        name="adDetails"
-        component={AdDetails}
-        options={{
-          tabBarButton: () => null,
-        }}
-      />
-      <Screen
-        name="myAdDetail"
-        component={MyAdDetail}
-        options={{
-          tabBarButton: () => null,
-        }}
-      />
-      <Screen
-        name="createAd"
-        component={CreateAd}
-        options={{
-          tabBarButton: () => null,
-        }}
-      />
-      <Screen
-        name="editMyAdd"
-        component={EditMyAd}
-        options={{
-          tabBarButton: () => null,
-        }}
-      />
-      <Screen
-        name="adPreview"
-        component={AdPreview}
-        options={{
-          tabBarButton: () => null,
-        }}
-      />
-      <Screen
-        name="adUpdatePreview"
-        component={AdUpdatePreview}
-        options={{
-          tabBarButton: () => null,
         }}
       />
       <Screen

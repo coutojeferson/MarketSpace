@@ -77,7 +77,7 @@ export function AdDetails() {
   const route = useRoute();
   const toast = useToast();
 
-  const { id } = route.params as RouteParams;
+  // const { id } = route.params as RouteParams;
   const price = Number(data?.price) / 100;
 
   const navigation = useNavigation();

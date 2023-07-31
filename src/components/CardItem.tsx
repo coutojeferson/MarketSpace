@@ -16,7 +16,7 @@ type ImageProps = {
 type CardItemProps = TouchableOpacityProps & {
   statusItem: Tag;
   avatar?: boolean;
-  avatarImage: string;
+  avatarImage?: string;
   active?: boolean;
   image: Array<ImageProps>;
   name: string;
