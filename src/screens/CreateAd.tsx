@@ -166,7 +166,7 @@ export function CreateAd() {
           <HStack>
             {itemPhoto.map((item) => (
               <BoxSelectImage
-                uri={item.uri}
+                images={item}
                 onRemovePhoto={(uri) => handleRemovePhoto(uri)}
               />
             ))}

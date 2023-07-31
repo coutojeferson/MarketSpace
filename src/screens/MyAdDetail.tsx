@@ -73,6 +73,7 @@ type DataProps = {
 
 export function MyAdDetail() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingToDelete, setIsLoadingToDelete] = useState(false);
   const [activeAd, setActiveAd] = useState(true);
   const [data, setData] = useState<DataProps>();
   const [type, setType] = useState<DataProps>({} as DataProps);
@@ -82,7 +83,7 @@ export function MyAdDetail() {
   const route = useRoute();
   const toast = useToast();
   const { saveProductDataToUpdate } = useApp();
-  const { id } = route.params as RouteParams;
+  const id = route.params as RouteParams;
 
   const price = Number(data?.price) / 100;
 
@@ -91,12 +92,13 @@ export function MyAdDetail() {
   }
 
   function handleEditAd(dataToUpdate: DataProps) {
+    console.log(dataToUpdate.price);
     const productData = {
       id,
       name: dataToUpdate.name,
       description: dataToUpdate.description,
       is_new: dataToUpdate.is_new,
-      price: data?.price,
+      price: dataToUpdate.price,
       accept_trade: dataToUpdate.accept_trade,
       payment_methods: dataToUpdate.payment_methods,
       images: dataToUpdate.product_images,
@@ -105,8 +107,29 @@ export function MyAdDetail() {
     navigation.navigate('editMyAdd');
   }
 
-  function handleDeleteMyAd() {
-    navigation.navigate('adPreview');
+  async function handleDeleteMyAd() {
+    try {
+      setIsLoading(true);
+      await api.delete(`/products/${id}`);
+      toast.show({
+        title: 'Anúncio removido com sucesso.',
+        placement: 'top',
+        bgColor: 'green.500',
+      });
+      navigation.navigate('myAds');
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível deletar seu anúncio. Tente novamente mais tarde.';
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function getProductById() {
@@ -262,11 +285,13 @@ export function MyAdDetail() {
             />
 
             <Button
+              isLoading={isLoadingToDelete}
               width="100%"
               title="Excluir anúncio"
               titleColor="gray.200"
               color="gray.500"
               leftIcon={<TrashSimple size={16} color="#5F5B62" />}
+              onPress={handleDeleteMyAd}
             />
           </VStack>
         </ScrollView>
