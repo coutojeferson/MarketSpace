@@ -114,15 +114,10 @@ export function CreateAd() {
         }
 
         const parts = photoSelected.assets[0].uri.split('/');
-
-        // Pegue o último elemento do array resultante, que deve conter a parte desejada
         const extractedPartUri = parts[parts.length - 1];
-
-        console.log(parts);
 
         const fileExtension = photoSelected.assets[0].uri.split('.').pop();
         const photoFile = {
-          // `${name}.${fileExtension}`.toLowerCase(),
           name: `${extractedPartUri}`.toLowerCase(),
           uri: photoSelected.assets[0].uri,
           type: `${photoSelected.assets[0].type}/${fileExtension}`,
@@ -171,7 +166,7 @@ export function CreateAd() {
           <HStack>
             {itemPhoto.map((item) => (
               <BoxSelectImage
-                uri={item.uri}
+                images={item}
                 onRemovePhoto={(uri) => handleRemovePhoto(uri)}
               />
             ))}

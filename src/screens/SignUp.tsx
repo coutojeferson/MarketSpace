@@ -141,8 +141,6 @@ export function SignUp() {
       const response = await api.post('/users', formData, config);
 
       await signIn(email, password);
-
-      console.log('Caiu aqui', response.data);
     } catch (error) {
       setIsLoading(false);
       const isAppError = error instanceof AppError;
@@ -156,8 +154,6 @@ export function SignUp() {
       });
     }
   }
-
-  console.log(userPhoto);
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
