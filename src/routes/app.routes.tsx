@@ -27,12 +27,8 @@ type AppRoutesTabs = {
 };
 
 type AppRoutesStack = {
-  myAdDetail: {
-    id: string;
-  };
-  adDetails: {
-    id: string;
-  };
+  myAdDetail: undefined;
+  adDetails: undefined;
   adPreview: undefined;
   adUpdatePreview: undefined;
   createAd: undefined;
