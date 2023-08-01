@@ -2,14 +2,23 @@ import { ActiveAds } from '@components/ActiveAds';
 import { Avatar } from '@components/Avatar';
 import { Button } from '@components/Button';
 import { Input } from '@components/Input';
-import { MagnifyingGlass, Faders, Plus } from 'phosphor-react-native';
+import {
+  MagnifyingGlass,
+  Faders,
+  Plus,
+  X,
+  XCircle,
+} from 'phosphor-react-native';
 
 import {
   Box,
   Center,
+  Checkbox,
   HStack,
+  Heading,
   Pressable,
   ScrollView,
+  Switch,
   Text,
   VStack,
   useToast,
@@ -19,7 +28,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 import { useAuth } from '@hooks/useAuth';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Modal, StyleSheet } from 'react-native';
+import { Alert, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { AppError } from '@utils/appError';
 import { api } from '@services/api';
 import { useApp } from '@hooks/useApp';
@@ -52,16 +61,30 @@ type DataProps = {
   user: UserProps;
 };
 
+type Params = {
+  is_new: boolean;
+  accept_trade: boolean;
+  payment_methods: Array<PaymentMethodsProps>;
+  query: string;
+};
+
 export function Home() {
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState<DataProps[]>([]);
   const [dataUserProducts, setDataUserProducts] = useState<DataProps[]>([]);
   const [searchItem, setSearchItem] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [acceptTrade, setAcceptTrade] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [value, setValue] = useState(false);
+  const [newEnabled, setNewEnabled] = useState(false);
+  const [usedEnabled, setUsedEnabled] = useState(false);
+
   const { user } = useAuth();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
-  const { saveProductSelected } = useApp();
+  const { saveProductSelected, productSelected } = useApp();
+
   const toast = useToast();
 
   function handleCreateAd() {
@@ -72,8 +95,9 @@ export function Home() {
     navigation.navigate('myAds');
   }
 
-  function handleAdDetails(item: DataProps) {
-    navigation.navigate('adDetails', { id: item.id });
+  function handleAdDetails(id: string) {
+    navigation.navigate('adDetails');
+    saveProductSelected({ id });
   }
 
   async function getAds() {
@@ -116,10 +140,27 @@ export function Home() {
   async function getProductsBySearchAndFilters() {
     try {
       setIsLoading(true);
-      const params = {
-        query: searchItem,
-      };
+      const params: Params = {} as Params;
+      if (searchItem) {
+        params.query = searchItem;
+      }
+
+      if (modalVisible) {
+        if (usedEnabled || newEnabled) {
+          params.is_new = value;
+        }
+        if (acceptTrade) {
+          params.accept_trade = acceptTrade;
+        }
+        if (paymentMethods.length) {
+          params.payment_methods = paymentMethods;
+        }
+      }
+      console.log('o que estamos mandando', params);
       const response = await api.get('products/', { params });
+      if (modalVisible) {
+        setModalVisible(false);
+      }
       setData(response.data);
     } catch (error) {
       const isAppError = error instanceof AppError;
@@ -134,6 +175,26 @@ export function Home() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function handleFilterReset() {
+    setUsedEnabled(false);
+    setNewEnabled(false);
+    setValue(false);
+    setPaymentMethods([]);
+    setAcceptTrade(false);
+  }
+
+  function handleNew() {
+    setNewEnabled(true);
+    setUsedEnabled(false);
+    setValue(true);
+  }
+
+  function handleUsed() {
+    setNewEnabled(false);
+    setUsedEnabled(true);
+    setValue(false);
   }
 
   useFocusEffect(
@@ -213,7 +274,7 @@ export function Home() {
                   avatarImage={item.user.avatar}
                   active={item.is_active}
                   image={item.product_images}
-                  onPress={() => handleAdDetails(item)}
+                  onPress={() => handleAdDetails(item.id)}
                 />
               </>
             ))}
@@ -228,21 +289,135 @@ export function Home() {
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
             setModalVisible(!modalVisible);
           }}
         >
-          <Box style={styles.centeredView}>
+          <VStack style={styles.centeredView}>
             <Box style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
+              <HStack alignItems="center">
+                <Heading flex={1}>Filtrar anúncios</Heading>
+                <Pressable
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                    getProductsBySearchAndFilters();
+                  }}
+                >
+                  <X color="#9F9BA1" />
+                </Pressable>
+              </HStack>
+
+              <Text
+                mt={6}
+                mb={3}
+                color="gray.200"
+                fontFamily="heading"
+                fontSize="sm"
               >
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
+                Condição
+              </Text>
+              <HStack>
+                <TouchableOpacity onPress={handleNew}>
+                  <HStack
+                    borderRadius="full"
+                    w={79}
+                    h={28}
+                    bgColor={newEnabled ? 'blue.500' : 'gray.500'}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Text
+                      color={newEnabled ? 'white' : 'gray.300'}
+                      fontFamily="heading"
+                    >
+                      NOVO
+                    </Text>
+                    {newEnabled && (
+                      <Pressable ml={1} onPress={() => setNewEnabled(false)}>
+                        <XCircle size={20} color="#EDECEE" weight="fill" />
+                      </Pressable>
+                    )}
+                  </HStack>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleUsed}>
+                  <HStack
+                    ml={2}
+                    borderRadius="full"
+                    w={79}
+                    h={28}
+                    bgColor={usedEnabled ? 'blue.500' : 'gray.500'}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Text
+                      color={usedEnabled ? 'white' : 'gray.300'}
+                      fontFamily="heading"
+                    >
+                      USADO
+                    </Text>
+                    {usedEnabled && (
+                      <Pressable ml={1} onPress={() => setUsedEnabled(false)}>
+                        <XCircle size={20} color="#EDECEE" weight="fill" />
+                      </Pressable>
+                    )}
+                  </HStack>
+                </TouchableOpacity>
+              </HStack>
+              <VStack alignItems="flex-start" mt={6}>
+                <Text fontFamily="heading" fontSize="sm">
+                  Aceita troca?
+                </Text>
+                <Switch
+                  size="lg"
+                  colorScheme="lightBlue"
+                  isChecked={acceptTrade}
+                  onToggle={() => setAcceptTrade(!acceptTrade)}
+                />
+              </VStack>
+              <Text fontFamily="heading" fontSize="sm" mb={2} mt={2}>
+                Meios de pagamento aceitos
+              </Text>
+              <Checkbox.Group
+                onChange={setPaymentMethods}
+                value={paymentMethods}
+                accessibilityLabel="chose payment methods"
+              >
+                <Checkbox value="boleto" my={1}>
+                  <Text>Boleto</Text>
+                </Checkbox>
+                <Checkbox value="pix" my={1}>
+                  <Text>Pix</Text>
+                </Checkbox>
+                <Checkbox value="cash" my={1}>
+                  <Text>Dinheiro</Text>
+                </Checkbox>
+                <Checkbox value="card" my={1}>
+                  <Text>Cartão de Crédito</Text>
+                </Checkbox>
+                <Checkbox value="deposit" my={1}>
+                  <Text>Depósito</Text>
+                </Checkbox>
+              </Checkbox.Group>
+              <VStack flex={1} justifyContent="flex-end">
+                <HStack justifyContent="space-between">
+                  <Button
+                    onPress={() => handleFilterReset()}
+                    color="gray.500"
+                    title="Resetar filtros"
+                    titleColor="gray.200"
+                    width={157}
+                  />
+                  <Button
+                    isLoading={isLoading}
+                    onPress={getProductsBySearchAndFilters}
+                    color="gray.100"
+                    title="Aplicar filtros"
+                    titleColor="gray.700"
+                    width={157}
+                  />
+                </HStack>
+              </VStack>
             </Box>
-          </Box>
+          </VStack>
         </Modal>
       </Box>
     </VStack>
@@ -251,16 +426,18 @@ export function Home() {
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
     marginTop: 22,
   },
   modalView: {
-    margin: 20,
+    margin: 10,
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: '75%',
+    paddingTop: 48,
+    paddingBottom: 32,
+    paddingHorizontal: 24,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -273,7 +450,6 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 20,
     padding: 10,
-    elevation: 2,
   },
   buttonOpen: {
     backgroundColor: '#F194FF',

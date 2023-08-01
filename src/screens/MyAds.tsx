@@ -16,6 +16,7 @@ import { AppError } from '@utils/appError';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 import { Loading } from '@components/Loading';
+import { useApp } from '@hooks/useApp';
 
 type ImageProps = {
   id: string;
@@ -51,12 +52,15 @@ export function MyAds() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const toast = useToast();
 
+  const { saveProductSelected } = useApp();
+
   function handleAdd() {
     navigation.navigate('createAd');
   }
 
   function handleAdDetails(id: string) {
-    navigation.navigate('myAdDetail', { id });
+    navigation.navigate('myAdDetail');
+    saveProductSelected({ id });
   }
 
   async function getProducts() {

@@ -37,10 +37,6 @@ import { api } from '@services/api';
 import { useApp } from '@hooks/useApp';
 import { Loading } from '@components/Loading';
 
-type RouteParams = {
-  id: string;
-};
-
 type ImageProps = {
   id: string;
   name: string;
@@ -82,8 +78,7 @@ export function MyAdDetail() {
 
   const route = useRoute();
   const toast = useToast();
-  const { saveProductDataToUpdate } = useApp();
-  const id = route.params as RouteParams;
+  const { saveProductDataToUpdate, productSelected } = useApp();
 
   const price = Number(data?.price) / 100;
 
@@ -92,9 +87,8 @@ export function MyAdDetail() {
   }
 
   function handleEditAd(dataToUpdate: DataProps) {
-    console.log(dataToUpdate.price);
     const productData = {
-      id,
+      id: productSelected.id,
       name: dataToUpdate.name,
       description: dataToUpdate.description,
       is_new: dataToUpdate.is_new,
@@ -110,7 +104,7 @@ export function MyAdDetail() {
   async function handleDeleteMyAd() {
     try {
       setIsLoading(true);
-      await api.delete(`/products/${id}`);
+      await api.delete(`/products/${productSelected.id}`);
       toast.show({
         title: 'Anúncio removido com sucesso.',
         placement: 'top',
@@ -134,7 +128,7 @@ export function MyAdDetail() {
 
   async function getProductById() {
     try {
-      const response = await api.get(`/products/${id}`);
+      const response = await api.get(`/products/${productSelected.id}`);
       setActiveAd(response.data.is_active);
       setData(response.data ? response.data : '');
     } catch (error) {

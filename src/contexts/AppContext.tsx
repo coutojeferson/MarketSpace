@@ -3,10 +3,10 @@ import { ReactNode, createContext, useState } from 'react';
 export type AppContextDataProps = {
   productPreviewData: ProductDataProps;
   productDataToUpdate: ProductDataProps;
-  productSelected: ProductDataProps;
+  productSelected: ProductSelectedProps;
   saveProductPreviewData: (productData: ProductDataProps) => void;
   saveProductDataToUpdate: (productData: ProductDataProps) => void;
-  saveProductSelected: (productData: ProductDataProps) => void;
+  saveProductSelected: (productData: ProductSelectedProps) => void;
 };
 export const AppContext = createContext<AppContextDataProps>(
   {} as AppContextDataProps,
@@ -36,16 +36,8 @@ type ProductDataProps = {
   listImagesToRemove?: String[];
 };
 
-type productSelectedPros = {
-  id?: string;
-  name: string;
-  description: string;
-  is_new: boolean;
-  price: number;
-  accept_trade: boolean;
-  payment_methods: any;
-  product_images: Array<ImageProductProps>;
-  listImagesToRemove?: String[];
+type ProductSelectedProps = {
+  id: string;
 };
 
 export function AppContextProvider({ children }: AppContextProviderProps) {
@@ -55,8 +47,8 @@ export function AppContextProvider({ children }: AppContextProviderProps) {
   const [productDataToUpdate, setProductDataToUpdate] =
     useState<ProductDataProps>({} as ProductDataProps);
 
-  const [productSelected, setProductSelected] = useState<ProductDataProps>(
-    {} as productSelectedPros,
+  const [productSelected, setProductSelected] = useState<ProductSelectedProps>(
+    {} as ProductSelectedProps,
   );
 
   function saveProductPreviewData(productData: ProductDataProps) {
@@ -67,7 +59,7 @@ export function AppContextProvider({ children }: AppContextProviderProps) {
     setProductDataToUpdate(productData);
   }
 
-  function saveProductSelected(productData: productSelectedPros) {
+  function saveProductSelected(productData: ProductSelectedProps) {
     setProductSelected(productData);
   }
 

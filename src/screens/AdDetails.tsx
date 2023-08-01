@@ -36,9 +36,6 @@ import { api } from '@services/api';
 import { AppError } from '@utils/appError';
 import { Loading } from '@components/Loading';
 
-type RouteParams = {
-  id: string;
-};
 type ImageProps = {
   id: string;
   name: string;
@@ -74,10 +71,7 @@ export function AdDetails() {
   const [data, setData] = useState<DataProps>();
 
   const { productSelected } = useApp();
-  const route = useRoute();
   const toast = useToast();
-
-  // const { id } = route.params as RouteParams;
   const price = Number(data?.price) / 100;
 
   const navigation = useNavigation();
@@ -88,7 +82,7 @@ export function AdDetails() {
 
   async function getProductById() {
     try {
-      const response = await api.get(`/products/${id}`);
+      const response = await api.get(`/products/${productSelected.id}`);
       setActiveAd(response.data.is_active);
       setData(response.data ? response.data : '');
     } catch (error) {
