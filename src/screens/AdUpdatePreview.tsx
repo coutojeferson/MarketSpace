@@ -115,8 +115,14 @@ export function AdUpdatePreview() {
           ) : (
             <TagUsedSecondary />
           )}
-          <HStack alignItems="baseline" justifyContent="space-between" mt={2}>
-            <Text fontFamily="heading" fontSize="lg" color="gray.100">
+          <HStack alignItems="center" mt={2}>
+            <Text
+              flex={1}
+              width="80%"
+              fontFamily="heading"
+              fontSize="lg"
+              color="gray.100"
+            >
               {productPreviewData.name}
             </Text>
             <Text color="blue.500" fontFamily="heading">

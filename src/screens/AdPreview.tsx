@@ -108,11 +108,11 @@ export function AdPreview() {
           ) : (
             <TagUsedSecondary />
           )}
-          <HStack alignItems="baseline" justifyContent="space-between" mt={2}>
+          <HStack alignItems="center" mt={2}>
             <Text fontFamily="heading" fontSize="lg" color="gray.100">
               {productPreviewData.name}
             </Text>
-            <Text color="blue.500" fontFamily="heading">
+            <Text flex={1} width="80%" color="blue.500" fontFamily="heading">
               <Text fontSize="sm">R$ </Text>
               <Text fontSize="lg">{price.toFixed(2).replace('.', ',')}</Text>
             </Text>
