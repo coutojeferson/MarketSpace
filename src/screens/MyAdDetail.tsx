@@ -32,7 +32,7 @@ import {
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 import { Header } from '@components/Header';
 import { useCallback, useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 import { AppError } from '@utils/appError';
 import { api } from '@services/api';
 import { useApp } from '@hooks/useApp';
@@ -86,7 +86,7 @@ export function MyAdDetail() {
   const price = Number(data?.price) / 100;
 
   function handleGoBack() {
-    navigation.goBack();
+    navigation.navigate('myAds');
   }
 
   function handleEditAd(dataToUpdate: DataProps) {
@@ -300,7 +300,12 @@ export function MyAdDetail() {
               titleColor="gray.200"
               color="gray.500"
               leftIcon={<TrashSimple size={16} color="#5F5B62" />}
-              onPress={handleDeleteMyAd}
+              onPress={() =>
+                Alert.alert('Remover', 'Deseja remover o anúncio?', [
+                  { text: 'Não', style: 'cancel' },
+                  { text: 'Sim', onPress: () => handleDeleteMyAd() },
+                ])
+              }
             />
           </VStack>
         </ScrollView>

@@ -18,6 +18,7 @@ import {
   Heading,
   Pressable,
   ScrollView,
+  Spinner,
   Switch,
   Text,
   VStack,
@@ -154,7 +155,6 @@ export function Home() {
         params.payment_methods = paymentMethods;
       }
 
-      console.log('o que estamos mandando', params);
       const response = await api.get('products/', { params });
       if (modalVisible) {
         setModalVisible(false);
@@ -293,7 +293,7 @@ export function Home() {
             )}
           </HStack>
         ) : (
-          <Loading />
+          <Spinner color="blue.500" />
         )}
       </ScrollView>
       <Box style={styles.centeredView}>
@@ -459,24 +459,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
   },
 });

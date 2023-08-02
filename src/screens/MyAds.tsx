@@ -102,6 +102,7 @@ export function MyAds() {
 
   useFocusEffect(
     useCallback(() => {
+      setService('');
       getProducts();
     }, []),
   );
