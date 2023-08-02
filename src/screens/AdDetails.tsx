@@ -16,7 +16,13 @@ import {
   QrCode,
   WhatsappLogo,
 } from 'phosphor-react-native';
-import { Dimensions, TouchableOpacity, FlatList, Image } from 'react-native';
+import {
+  Dimensions,
+  TouchableOpacity,
+  FlatList,
+  Image,
+  Alert,
+} from 'react-native';
 import { Select } from 'native-base';
 import { useCallback, useEffect, useState } from 'react';
 import { CardItem } from '@components/CardItem';
@@ -35,6 +41,7 @@ import { useApp } from '@hooks/useApp';
 import { api } from '@services/api';
 import { AppError } from '@utils/appError';
 import { Loading } from '@components/Loading';
+import * as Linking from 'expo-linking';
 
 type ImageProps = {
   id: string;
@@ -96,6 +103,12 @@ export function AdDetails() {
         bgColor: 'red.500',
       });
     }
+  }
+
+  function handleContactVendor() {
+    Linking.openURL(
+      `https://wa.me/55${data?.user.tel}/?text=Olá,%20${data?.user.name},%20Tudo%20bem?%20Tenho%20interesse%20em%20comprar%20seu%20item:%20${data?.name},%20publicado%20no%20MarketSpace!`,
+    );
   }
 
   useFocusEffect(
@@ -206,6 +219,7 @@ export function AdDetails() {
                 </Text>
               </Text>
               <Button
+                onPress={() => handleContactVendor()}
                 title="Entrar em contato"
                 titleColor="gray.700"
                 width={189}
