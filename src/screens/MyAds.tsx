@@ -1,4 +1,5 @@
 import {
+  Box,
   CheckIcon,
   HStack,
   ScrollView,
@@ -46,8 +47,9 @@ type DataProps = {
 };
 
 export function MyAds() {
-  const [service, setService] = useState('Todos');
+  const [service, setService] = useState('');
   const [data, setData] = useState<DataProps[]>([]);
+  const [dataFilters, setDataFilters] = useState<DataProps[]>([]);
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const toast = useToast();
@@ -67,6 +69,7 @@ export function MyAds() {
     try {
       const response = await api.get('users/products');
       setData(response.data);
+      setService('all');
     } catch (error) {
       const isAppError = error instanceof AppError;
       const title = isAppError
@@ -80,8 +83,26 @@ export function MyAds() {
     }
   }
 
+  useEffect(() => {
+    if (service === 'all') {
+      setDataFilters(data);
+    }
+    if (service === 'active') {
+      const DataFilter = data.filter((item) => item.is_active);
+
+      setDataFilters(DataFilter);
+    }
+
+    if (service === 'inactive') {
+      const DataFilter = data.filter((item) => !item.is_active);
+
+      setDataFilters(DataFilter);
+    }
+  }, [service]);
+
   useFocusEffect(
     useCallback(() => {
+      setService('');
       getProducts();
     }, []),
   );
@@ -96,13 +117,13 @@ export function MyAds() {
           <Plus />
         </TouchableOpacity>
       </HStack>
-      {data.length ? (
+      {dataFilters.length ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           <HStack alignItems="center" justifyContent="space-between" mt={8}>
             <Text fontFamily="body" fontSize="sm">
-              {data.length > 1
-                ? `${data.length} anúncios`
-                : `${data.length} anúncio`}
+              {dataFilters.length > 1
+                ? `${dataFilters.length} anúncios`
+                : `${dataFilters.length} anúncio`}
             </Text>
             <Select
               size="sm"
@@ -124,19 +145,26 @@ export function MyAds() {
             </Select>
           </HStack>
           <HStack mt={5} flexWrap="wrap" justifyContent="space-between">
-            {data.map((item) => (
-              <>
-                <CardItem
-                  name={item.name}
-                  price={item.price}
-                  statusItem={item.is_new ? 'new' : 'used'}
-                  avatar={false}
-                  active={item.is_active}
-                  image={item.product_images}
-                  onPress={() => handleAdDetails(item.id)}
-                />
-              </>
-            ))}
+            {dataFilters.length ? (
+              dataFilters.map((item) => (
+                <Box key={item.id}>
+                  <CardItem
+                    key={item.id}
+                    name={item.name}
+                    price={item.price}
+                    statusItem={item.is_new ? 'new' : 'used'}
+                    avatar={false}
+                    active={item.is_active}
+                    image={item.product_images}
+                    onPress={() => handleAdDetails(item.id)}
+                  />
+                </Box>
+              ))
+            ) : (
+              <Text textAlign="center" fontFamily="body" fontSize="md">
+                Ops! Parece que não encontramos nenhum resultado
+              </Text>
+            )}
           </HStack>
         </ScrollView>
       ) : (

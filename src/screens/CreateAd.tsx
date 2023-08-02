@@ -153,146 +153,159 @@ export function CreateAd() {
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <VStack flex={1} bgColor="gray.600" px={6} py={9}>
-        <Header title="Criar anúncio" />
-        <Text fontFamily="heading" fontSize="sm" mt={4}>
-          Imagens
-        </Text>
-        <Text mt={1} color="gray.300">
-          Escolha até 3 imagens para mostrar o quando o seu produto é incrível!
-        </Text>
-        <HStack>
-          <HStack>
-            {itemPhoto.map((item) => (
-              <BoxSelectImage
-                images={item}
-                onRemovePhoto={(uri) => handleRemovePhoto(uri)}
-              />
-            ))}
-          </HStack>
-          <Box>
-            {itemPhoto.length < 3 && (
-              <BoxSelectImage onPress={handleItemPhotoSelect} />
-            )}
-          </Box>
-        </HStack>
-        <Text fontFamily="heading" fontSize="sm" mt={8}>
-          Sobre o produto
-        </Text>
-        <Controller
-          control={control}
-          name="name"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              mt={4}
-              placeholder="Título do anúncio"
-              onChangeText={onChange}
-              value={value}
-              errorMessage={errors.name?.message}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="description"
-          render={({ field: { onChange, value } }) => (
-            <TextArea
-              placeholder="Descrição do produto"
-              onChangeText={onChange}
-              value={value}
-            />
-          )}
-        />
-        <HStack>
-          <Radio.Group
-            flexDirection="row"
-            name="myRadioGroup"
-            accessibilityLabel="Tipo do produto"
-            value={value ? 'isNew' : 'notNew'}
-            onChange={(nextValue) => {
-              setValue(nextValue === 'isNew' ? true : false);
-            }}
-            colorScheme="lightBlue"
-          >
-            <Radio value="isNew" my={1}>
-              Produto novo
-            </Radio>
-            <Radio value="notNew" my={1} ml={6}>
-              Produto usado
-            </Radio>
-          </Radio.Group>
-        </HStack>
-        <Text fontFamily="heading" fontSize="sm" mt={8}>
-          Sobre o produto
-        </Text>
-        <Controller
-          control={control}
-          name="price"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              inputMode="numeric"
-              leftElement={<Text ml={4}>R$</Text>}
-              mt={4}
-              placeholder="Valor do produto"
-              onChangeText={onChange}
-              value={value}
-              errorMessage={errors.price?.message}
-            />
-          )}
-        />
-        <VStack alignItems="flex-start">
-          <Text fontFamily="heading" fontSize="sm">
-            Aceito troca?
+    <VStack flex={1} bgColor="gray.600">
+      <Box mt={4} px={6} pt={9} pb={4}>
+        <Header title="Criar anúncio" onPress={handleGoBack} />
+      </Box>
+      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+        <VStack bgColor="gray.600" px={6}>
+          <Text fontFamily="heading" fontSize="sm" mt={4}>
+            Imagens
           </Text>
-          <Switch
-            size="lg"
-            colorScheme="lightBlue"
-            isChecked={acceptTrade}
-            onToggle={() => setAcceptTrade(!acceptTrade)}
+          <Text mt={1} color="gray.300">
+            Escolha até 3 imagens para mostrar o quando o seu produto é
+            incrível!
+          </Text>
+          <HStack>
+            <HStack>
+              {itemPhoto.map((item) => (
+                <BoxSelectImage
+                  images={item}
+                  onRemovePhoto={(uri) => handleRemovePhoto(uri)}
+                />
+              ))}
+            </HStack>
+            <Box>
+              {itemPhoto.length < 3 && (
+                <BoxSelectImage onPress={handleItemPhotoSelect} />
+              )}
+            </Box>
+          </HStack>
+          <Text fontFamily="heading" fontSize="sm" mt={8}>
+            Sobre o produto
+          </Text>
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                mt={4}
+                placeholder="Título do anúncio"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.name?.message}
+              />
+            )}
           />
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { onChange, value } }) => (
+              <TextArea
+                placeholder="Descrição do produto"
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+          />
+          <HStack>
+            <Radio.Group
+              flexDirection="row"
+              name="myRadioGroup"
+              accessibilityLabel="Tipo do produto"
+              value={value ? 'isNew' : 'notNew'}
+              onChange={(nextValue) => {
+                setValue(nextValue === 'isNew' ? true : false);
+              }}
+              colorScheme="lightBlue"
+            >
+              <Radio value="isNew" my={1}>
+                Produto novo
+              </Radio>
+              <Radio value="notNew" my={1} ml={6}>
+                Produto usado
+              </Radio>
+            </Radio.Group>
+          </HStack>
+          <Text fontFamily="heading" fontSize="sm" mt={8}>
+            Sobre o produto
+          </Text>
+          <Controller
+            control={control}
+            name="price"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                inputMode="numeric"
+                leftElement={<Text ml={4}>R$</Text>}
+                mt={4}
+                placeholder="Valor do produto"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.price?.message}
+              />
+            )}
+          />
+          <VStack alignItems="flex-start">
+            <Text fontFamily="heading" fontSize="sm">
+              Aceito troca?
+            </Text>
+            <Switch
+              size="lg"
+              colorScheme="lightBlue"
+              isChecked={acceptTrade}
+              onToggle={() => setAcceptTrade(!acceptTrade)}
+            />
+          </VStack>
+          <Text fontFamily="heading" fontSize="sm" mb={4}>
+            Meios de pagamento aceitos
+          </Text>
+          <Checkbox.Group
+            onChange={setPaymentMethods}
+            value={paymentMethods}
+            accessibilityLabel="chose payment methods"
+          >
+            <Checkbox value="boleto" my={1}>
+              <Text>Boleto</Text>
+            </Checkbox>
+            <Checkbox value="pix" my={1}>
+              <Text>Pix</Text>
+            </Checkbox>
+            <Checkbox value="cash" my={1}>
+              <Text>Dinheiro</Text>
+            </Checkbox>
+            <Checkbox value="card" my={1}>
+              <Text>Cartão de Crédito</Text>
+            </Checkbox>
+            <Checkbox value="deposit" my={1}>
+              <Text>Depósito</Text>
+            </Checkbox>
+          </Checkbox.Group>
         </VStack>
-        <Text fontFamily="heading" fontSize="sm" mb={4}>
-          Meios de pagamento aceitos
-        </Text>
-        <Checkbox.Group
-          onChange={setPaymentMethods}
-          value={paymentMethods}
-          accessibilityLabel="chose payment methods"
+
+        <HStack
+          mt={4}
+          px={6}
+          pt={6}
+          pb={8}
+          justifyContent="space-between"
+          bgColor="gray.700"
         >
-          <Checkbox value="boleto" my={1}>
-            <Text>Boleto</Text>
-          </Checkbox>
-          <Checkbox value="pix" my={1}>
-            <Text>Pix</Text>
-          </Checkbox>
-          <Checkbox value="cash" my={1}>
-            <Text>Dinheiro</Text>
-          </Checkbox>
-          <Checkbox value="card" my={1}>
-            <Text>Cartão de Crédito</Text>
-          </Checkbox>
-          <Checkbox value="deposit" my={1}>
-            <Text>Depósito</Text>
-          </Checkbox>
-        </Checkbox.Group>
-      </VStack>
-      <HStack px={6} py={5} justifyContent="space-between">
-        <Button
-          onPress={handleGoBack}
-          width={157}
-          title="Cancelar"
-          titleColor="gray.200"
-          color="gray.500"
-        />
-        <Button
-          onPress={handleSubmit(handleRegisterNewAdd)}
-          width={157}
-          title="Avançar"
-          titleColor="gray.700"
-          color="gray.100"
-        />
-      </HStack>
-    </ScrollView>
+          <Button
+            onPress={handleGoBack}
+            width={157}
+            title="Cancelar"
+            titleColor="gray.200"
+            color="gray.500"
+          />
+          <Button
+            onPress={handleSubmit(handleRegisterNewAdd)}
+            width={157}
+            title="Avançar"
+            titleColor="gray.700"
+            color="gray.100"
+          />
+        </HStack>
+      </ScrollView>
+    </VStack>
   );
 }

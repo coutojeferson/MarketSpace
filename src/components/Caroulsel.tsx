@@ -27,7 +27,7 @@ export function Carousel({ active = true, images }: Props) {
       pagingEnabled
       keyExtractor={(item: Images) => (item.uri ? item.uri : item.path)}
       renderItem={({ item }) => (
-        <Box>
+        <Box key={item.id}>
           <Image
             source={{
               uri: item.uri
@@ -37,7 +37,7 @@ export function Carousel({ active = true, images }: Props) {
             resizeMode="cover"
             style={{
               width: Dimensions.get('window').width,
-              height: 200,
+              height: 280,
             }}
           />
         </Box>

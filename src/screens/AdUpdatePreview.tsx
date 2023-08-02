@@ -1,7 +1,7 @@
 import { Avatar } from '@components/Avatar';
 import { Carousel } from '@components/Caroulsel';
 import { Button } from '@components/Button';
-import { VStack, Text, HStack, ScrollView, useToast } from 'native-base';
+import { VStack, Text, HStack, ScrollView, useToast, Box } from 'native-base';
 import TagUsedSecondary from '@assets/usedSecondary.svg';
 import TagNewSecondary from '@assets/newSecondary.svg';
 import {
@@ -25,7 +25,7 @@ export function AdUpdatePreview() {
   const [isLoading, setIsloading] = useState(false);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
-  const { productPreviewData } = useApp();
+  const { productPreviewData, productSelected } = useApp();
   const { user } = useAuth();
   const toast = useToast();
   const price = productPreviewData.price / 100;
@@ -52,7 +52,7 @@ export function AdUpdatePreview() {
         payment_methods: productPreviewData.payment_methods,
       };
 
-      await api.put(`/products/${productPreviewData.id}`, body);
+      await api.put(`/products/${productSelected.id}`, body);
 
       const formData = new FormData();
       const newImages = productPreviewData.images.filter((item) => item.uri);
@@ -62,7 +62,7 @@ export function AdUpdatePreview() {
           formData.append('images', item as any);
           return;
         });
-        formData.append('product_id', productPreviewData.id);
+        formData.append('product_id', productSelected.id);
         await api.post('/products/images', formData, config);
         await api.delete('/products/images', {
           data: {
@@ -105,7 +105,13 @@ export function AdUpdatePreview() {
         </VStack>
         <VStack px={6} mb={5}>
           <HStack alignItems="center" my={6}>
-            <Avatar width={6} height={6} source={{ uri: user.avatar }} />
+            <Avatar
+              width={6}
+              height={6}
+              source={{
+                uri: `${api.defaults.baseURL}/images/${user.avatar}`,
+              }}
+            />
             <Text ml={2} fontFamily="body" color="gray.100" fontSize="sm">
               {user.name}
             </Text>
@@ -115,11 +121,17 @@ export function AdUpdatePreview() {
           ) : (
             <TagUsedSecondary />
           )}
-          <HStack alignItems="baseline" justifyContent="space-between" mt={2}>
-            <Text fontFamily="heading" fontSize="lg" color="gray.100">
+          <HStack alignItems="center" mt={2}>
+            <Text
+              flex={1}
+              width="80%"
+              fontFamily="heading"
+              fontSize="lg"
+              color="gray.100"
+            >
               {productPreviewData.name}
             </Text>
-            <Text color="blue.500" fontFamily="heading">
+            <Text color="blue.500" fontFamily="heading" ml={4}>
               <Text fontSize="sm">R$ </Text>
               <Text fontSize="lg">{price.toFixed(2).replace('.', ',')}</Text>
             </Text>
@@ -135,7 +147,7 @@ export function AdUpdatePreview() {
             Meios de pagamento:
           </Text>
           {productPreviewData.payment_methods.map((item: any) => (
-            <>
+            <Box key={item}>
               {item === 'boleto' && (
                 <HStack mt={2}>
                   <Barcode />
@@ -166,7 +178,7 @@ export function AdUpdatePreview() {
                   <Text ml={2}>Depósito Bancário</Text>
                 </HStack>
               )}
-            </>
+            </Box>
           ))}
         </VStack>
         <HStack px={6} py={5} justifyContent="space-between" bg="gray.700">

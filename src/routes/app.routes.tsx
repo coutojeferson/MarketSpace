@@ -13,7 +13,7 @@ import { AdUpdatePreview } from '@screens/AdUpdatePreview';
 import { MyAdDetail } from '@screens/MyAdDetail';
 import { EditMyAd } from '@screens/EditMyAd';
 import { House, Tag, SignOut as SignOutIcon } from 'phosphor-react-native';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { useAuth } from '@hooks/useAuth';
 import {
   NativeStackNavigationProp,
@@ -103,6 +103,15 @@ function HomePage() {
       <Screen
         name="signOut"
         component={SignOut}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            Alert.alert('Sair', 'Deseja realmente sair?', [
+              { text: 'Não', style: 'cancel' },
+              { text: 'Sim', onPress: () => signOut() },
+            ]);
+          },
+        }}
         options={{
           tabBarIcon: ({ color }) => (
             <SignOutIcon color="#E07878" size={iconSize} />

@@ -18,6 +18,7 @@ import {
   Heading,
   Pressable,
   ScrollView,
+  Spinner,
   Switch,
   Text,
   VStack,
@@ -144,19 +145,16 @@ export function Home() {
       if (searchItem) {
         params.query = searchItem;
       }
-
-      if (modalVisible) {
-        if (usedEnabled || newEnabled) {
-          params.is_new = value;
-        }
-        if (acceptTrade) {
-          params.accept_trade = acceptTrade;
-        }
-        if (paymentMethods.length) {
-          params.payment_methods = paymentMethods;
-        }
+      if (usedEnabled || newEnabled) {
+        params.is_new = value;
       }
-      console.log('o que estamos mandando', params);
+      if (acceptTrade) {
+        params.accept_trade = acceptTrade;
+      }
+      if (paymentMethods.length) {
+        params.payment_methods = paymentMethods;
+      }
+
       const response = await api.get('products/', { params });
       if (modalVisible) {
         setModalVisible(false);
@@ -199,6 +197,11 @@ export function Home() {
 
   useFocusEffect(
     useCallback(() => {
+      setUsedEnabled(false);
+      setNewEnabled(false);
+      setValue(false);
+      setPaymentMethods([]);
+      setAcceptTrade(false);
       getAds();
       getProducts();
     }, []),
@@ -244,9 +247,9 @@ export function Home() {
         onChangeText={setSearchItem}
         InputRightElement={
           <>
-            <Pressable onPress={getProductsBySearchAndFilters}>
+            <TouchableOpacity onPress={getProductsBySearchAndFilters}>
               <MagnifyingGlass weight="bold" color="#3E3A40" size={20} />
-            </Pressable>
+            </TouchableOpacity>
             <Box
               color="gray.400"
               borderWidth="0.5"
@@ -255,32 +258,42 @@ export function Home() {
               ml={14}
               mr={14}
             />
-            <Pressable mr={14} onPress={() => setModalVisible(true)}>
+            <TouchableOpacity
+              style={{ marginRight: 14 }}
+              onPress={() => setModalVisible(true)}
+            >
               <Faders weight="bold" color="#3E3A40" size={20} />
-            </Pressable>
+            </TouchableOpacity>
           </>
         }
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         {!isLoading ? (
           <HStack flex={1} flexWrap="wrap" justifyContent="space-between">
-            {data.map((item) => (
-              <>
-                <CardItem
-                  name={item.name}
-                  price={item.price}
-                  statusItem={item.is_new ? 'new' : 'used'}
-                  avatar={true}
-                  avatarImage={item.user.avatar}
-                  active={item.is_active}
-                  image={item.product_images}
-                  onPress={() => handleAdDetails(item.id)}
-                />
-              </>
-            ))}
+            {data.length ? (
+              data.map((item) => (
+                <Box key={item.id}>
+                  <CardItem
+                    name={item.name}
+                    price={item.price}
+                    statusItem={item.is_new ? 'new' : 'used'}
+                    avatar={true}
+                    avatarImage={item.user.avatar}
+                    active={item.is_active}
+                    image={item.product_images}
+                    onPress={() => handleAdDetails(item.id)}
+                  />
+                </Box>
+              ))
+            ) : (
+              <Text textAlign="center" fontFamily="body" fontSize="md">
+                Ops! Parece que não encontramos nenhum resultado correspondente
+                à sua busca ou aos filtros aplicados.{' '}
+              </Text>
+            )}
           </HStack>
         ) : (
-          <Loading />
+          <Spinner color="blue.500" />
         )}
       </ScrollView>
       <Box style={styles.centeredView}>
@@ -446,24 +459,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
   },
 });

@@ -8,6 +8,7 @@ import {
   ScrollView,
   Center,
   useToast,
+  Box,
 } from 'native-base';
 import TagUsedSecondary from '@assets/usedSecondary.svg';
 import TagNewSecondary from '@assets/newSecondary.svg';
@@ -31,7 +32,7 @@ import {
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 import { Header } from '@components/Header';
 import { useCallback, useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 import { AppError } from '@utils/appError';
 import { api } from '@services/api';
 import { useApp } from '@hooks/useApp';
@@ -85,7 +86,7 @@ export function MyAdDetail() {
   const price = Number(data?.price) / 100;
 
   function handleGoBack() {
-    navigation.goBack();
+    navigation.navigate('myAds');
   }
 
   function handleEditAd(dataToUpdate: DataProps) {
@@ -182,9 +183,9 @@ export function MyAdDetail() {
 
   return (
     <VStack flex={1} bg="gray.600">
-      <HStack px={6} mt={9} mb={3} justifyContent="space-between">
+      <HStack px={6} mb={3} mt={45} justifyContent="space-between">
         <Header onPress={handleGoBack} />
-        <TouchableOpacity onPress={() => handleEditAd(data)}>
+        <TouchableOpacity onPress={() => (data ? handleEditAd(data) : {})}>
           <PencilSimpleLine />
         </TouchableOpacity>
       </HStack>
@@ -230,7 +231,7 @@ export function MyAdDetail() {
               >
                 {data?.name}
               </Text>
-              <Text color="blue.500" fontFamily="heading">
+              <Text color="blue.500" fontFamily="heading" ml={4}>
                 <Text fontSize="sm">R$ </Text>
                 <Text fontSize="lg">{price.toFixed(2).replace('.', ',')}</Text>
               </Text>
@@ -246,7 +247,7 @@ export function MyAdDetail() {
               Meios de pagamento:
             </Text>
             {data?.payment_methods.map((item: PaymentMethodsProps) => (
-              <>
+              <Box key={item.key}>
                 {item.key === 'boleto' && (
                   <HStack mt={2}>
                     <Barcode />
@@ -277,7 +278,7 @@ export function MyAdDetail() {
                     <Text ml={2}>Depósito Bancário</Text>
                   </HStack>
                 )}
-              </>
+              </Box>
             ))}
           </VStack>
           <VStack flex={1} px={6} py={5}>
@@ -299,7 +300,12 @@ export function MyAdDetail() {
               titleColor="gray.200"
               color="gray.500"
               leftIcon={<TrashSimple size={16} color="#5F5B62" />}
-              onPress={handleDeleteMyAd}
+              onPress={() =>
+                Alert.alert('Remover', 'Deseja remover o anúncio?', [
+                  { text: 'Não', style: 'cancel' },
+                  { text: 'Sim', onPress: () => handleDeleteMyAd() },
+                ])
+              }
             />
           </VStack>
         </ScrollView>
