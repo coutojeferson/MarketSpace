@@ -185,7 +185,7 @@ export function MyAdDetail() {
     <VStack flex={1} bg="gray.600">
       <HStack px={6} mb={3} mt={45} justifyContent="space-between">
         <Header onPress={handleGoBack} />
-        <TouchableOpacity onPress={() => handleEditAd(data)}>
+        <TouchableOpacity onPress={() => (data ? handleEditAd(data) : {})}>
           <PencilSimpleLine />
         </TouchableOpacity>
       </HStack>

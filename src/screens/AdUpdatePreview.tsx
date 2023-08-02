@@ -25,7 +25,7 @@ export function AdUpdatePreview() {
   const [isLoading, setIsloading] = useState(false);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
-  const { productPreviewData } = useApp();
+  const { productPreviewData, productSelected } = useApp();
   const { user } = useAuth();
   const toast = useToast();
   const price = productPreviewData.price / 100;
@@ -52,7 +52,7 @@ export function AdUpdatePreview() {
         payment_methods: productPreviewData.payment_methods,
       };
 
-      await api.put(`/products/${productPreviewData.id}`, body);
+      await api.put(`/products/${productSelected.id}`, body);
 
       const formData = new FormData();
       const newImages = productPreviewData.images.filter((item) => item.uri);
@@ -62,7 +62,7 @@ export function AdUpdatePreview() {
           formData.append('images', item as any);
           return;
         });
-        formData.append('product_id', productPreviewData.id);
+        formData.append('product_id', productSelected.id);
         await api.post('/products/images', formData, config);
         await api.delete('/products/images', {
           data: {
