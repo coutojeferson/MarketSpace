@@ -74,7 +74,6 @@ type DataProps = {
 };
 
 export function AdDetails() {
-  const [activeAd, setActiveAd] = useState(true);
   const [data, setData] = useState<DataProps>();
 
   const { productSelected } = useApp();
@@ -90,7 +89,6 @@ export function AdDetails() {
   async function getProductById() {
     try {
       const response = await api.get(`/products/${productSelected.id}`);
-      setActiveAd(response.data.is_active);
       setData(response.data ? response.data : '');
     } catch (error) {
       const isAppError = error instanceof AppError;
