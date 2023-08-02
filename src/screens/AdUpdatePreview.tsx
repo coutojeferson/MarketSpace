@@ -57,20 +57,20 @@ export function AdUpdatePreview() {
       const formData = new FormData();
       const newImages = productPreviewData.images.filter((item) => item.uri);
 
-      newImages.map((item) => {
-        formData.append('images', item as any);
-        return;
-      });
-
-      formData.append('product_id', productPreviewData.id);
-      await api.post('/products/images', formData, config);
-      await api.delete('/products/images', {
-        data: {
-          productImagesIds: productPreviewData.listImagesToRemove,
-        },
-      });
-
-      navigation.navigate('myAdDetail', productPreviewData.id);
+      if (newImages.length) {
+        newImages.map((item) => {
+          formData.append('images', item as any);
+          return;
+        });
+        formData.append('product_id', productPreviewData.id);
+        await api.post('/products/images', formData, config);
+        await api.delete('/products/images', {
+          data: {
+            productImagesIds: productPreviewData.listImagesToRemove,
+          },
+        });
+      }
+      navigation.navigate('myAdDetail');
     } catch (error) {
       console.log(error);
       const isAppError = error instanceof AppError;
