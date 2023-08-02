@@ -1,7 +1,7 @@
 import { Avatar } from '@components/Avatar';
 import { Carousel } from '@components/Caroulsel';
 import { Button } from '@components/Button';
-import { VStack, Text, HStack, ScrollView, useToast } from 'native-base';
+import { VStack, Text, HStack, ScrollView, useToast, Box } from 'native-base';
 import TagUsedSecondary from '@assets/usedSecondary.svg';
 import TagNewSecondary from '@assets/newSecondary.svg';
 import {
@@ -25,7 +25,7 @@ export function AdPreview() {
   const [isLoading, setIsloading] = useState(false);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
-  const { productPreviewData } = useApp();
+  const { productPreviewData, saveProductSelected } = useApp();
   const { user } = useAuth();
   const toast = useToast();
   const price = productPreviewData.price / 100;
@@ -63,7 +63,8 @@ export function AdPreview() {
 
       await api.post('/products/images', formData, config);
 
-      navigation.navigate('myAdDetail', response.data.id);
+      saveProductSelected(response.data.id);
+      navigation.navigate('myAdDetail');
     } catch (error) {
       console.log(error);
       const isAppError = error instanceof AppError;
@@ -98,7 +99,13 @@ export function AdPreview() {
         </VStack>
         <VStack px={6} mb={5}>
           <HStack alignItems="center" my={6}>
-            <Avatar width={6} height={6} source={{ uri: user.avatar }} />
+            <Avatar
+              width={6}
+              height={6}
+              source={{
+                uri: `${api.defaults.baseURL}/images/${user.avatar}`,
+              }}
+            />
             <Text ml={2} fontFamily="body" color="gray.100" fontSize="sm">
               {user.name}
             </Text>
@@ -109,10 +116,16 @@ export function AdPreview() {
             <TagUsedSecondary />
           )}
           <HStack alignItems="center" mt={2}>
-            <Text fontFamily="heading" fontSize="lg" color="gray.100">
+            <Text
+              flex={1}
+              width="80%"
+              fontFamily="heading"
+              fontSize="lg"
+              color="gray.100"
+            >
               {productPreviewData.name}
             </Text>
-            <Text flex={1} width="80%" color="blue.500" fontFamily="heading">
+            <Text color="blue.500" fontFamily="heading" ml={4}>
               <Text fontSize="sm">R$ </Text>
               <Text fontSize="lg">{price.toFixed(2).replace('.', ',')}</Text>
             </Text>
@@ -128,7 +141,7 @@ export function AdPreview() {
             Meios de pagamento:
           </Text>
           {productPreviewData.payment_methods.map((item: any) => (
-            <>
+            <Box key={item.key}>
               {item === 'boleto' && (
                 <HStack mt={2}>
                   <Barcode />
@@ -159,7 +172,7 @@ export function AdPreview() {
                   <Text ml={2}>Depósito Bancário</Text>
                 </HStack>
               )}
-            </>
+            </Box>
           ))}
         </VStack>
         <HStack px={6} py={5} justifyContent="space-between" bg="gray.700">

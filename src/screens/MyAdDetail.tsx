@@ -8,6 +8,7 @@ import {
   ScrollView,
   Center,
   useToast,
+  Box,
 } from 'native-base';
 import TagUsedSecondary from '@assets/usedSecondary.svg';
 import TagNewSecondary from '@assets/newSecondary.svg';
@@ -182,7 +183,7 @@ export function MyAdDetail() {
 
   return (
     <VStack flex={1} bg="gray.600">
-      <HStack px={6} mt={9} mb={3} justifyContent="space-between">
+      <HStack px={6} mb={3} mt={45} justifyContent="space-between">
         <Header onPress={handleGoBack} />
         <TouchableOpacity onPress={() => handleEditAd(data)}>
           <PencilSimpleLine />
@@ -230,7 +231,7 @@ export function MyAdDetail() {
               >
                 {data?.name}
               </Text>
-              <Text color="blue.500" fontFamily="heading">
+              <Text color="blue.500" fontFamily="heading" ml={4}>
                 <Text fontSize="sm">R$ </Text>
                 <Text fontSize="lg">{price.toFixed(2).replace('.', ',')}</Text>
               </Text>
@@ -246,7 +247,7 @@ export function MyAdDetail() {
               Meios de pagamento:
             </Text>
             {data?.payment_methods.map((item: PaymentMethodsProps) => (
-              <>
+              <Box key={item.key}>
                 {item.key === 'boleto' && (
                   <HStack mt={2}>
                     <Barcode />
@@ -277,7 +278,7 @@ export function MyAdDetail() {
                     <Text ml={2}>Depósito Bancário</Text>
                   </HStack>
                 )}
-              </>
+              </Box>
             ))}
           </VStack>
           <VStack flex={1} px={6} py={5}>

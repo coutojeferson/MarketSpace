@@ -28,7 +28,6 @@ import { Plus } from 'phosphor-react-native';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { TouchableOpacity } from 'react-native';
-import RNFS from 'react-native-fs';
 import { api } from '@services/api';
 
 type ImageProps = {
@@ -170,9 +169,6 @@ export function EditMyAd() {
   function handleGoBack() {
     navigation.goBack();
   }
-  function handlePreviewScreen() {
-    navigation.navigate('adPreview');
-  }
 
   useEffect(() => {
     setPaymentMethods(
@@ -183,6 +179,7 @@ export function EditMyAd() {
     setAcceptTrade(productDataToUpdate.accept_trade);
 
     setItemPhoto([...productDataToUpdate.images]);
+    setValue(productDataToUpdate.is_new);
   }, []);
 
   return (
@@ -245,7 +242,7 @@ export function EditMyAd() {
             flexDirection="row"
             name="myRadioGroup"
             accessibilityLabel="Tipo do produto"
-            value={productDataToUpdate.is_new ? 'isNew' : 'notNew'}
+            value={value ? 'isNew' : 'notNew'}
             onChange={(nextValue) => {
               setValue(nextValue === 'isNew' ? true : false);
             }}

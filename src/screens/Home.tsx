@@ -272,7 +272,7 @@ export function Home() {
           <HStack flex={1} flexWrap="wrap" justifyContent="space-between">
             {data.length ? (
               data.map((item) => (
-                <>
+                <Box key={item.id}>
                   <CardItem
                     name={item.name}
                     price={item.price}
@@ -283,7 +283,7 @@ export function Home() {
                     image={item.product_images}
                     onPress={() => handleAdDetails(item.id)}
                   />
-                </>
+                </Box>
               ))
             ) : (
               <Text textAlign="center" fontFamily="body" fontSize="md">

@@ -104,106 +104,117 @@ export function AdDetails() {
     }, []),
   );
   return (
-    <VStack bgColor="gray.700" flex={1}>
+    <VStack bgColor="gray.600" flex={1}>
       {data ? (
         <VStack flex={1} mt={9}>
-          <Box px={6}>
+          <VStack px={6} pt={4} pb={4}>
             <Header hideTitle onPress={handleBack} />
-          </Box>
-          <Box mt={4}>
-            <Carousel />
-          </Box>
-          <VStack>
-            <Carousel images={data?.product_images} />
           </VStack>
-          <VStack px={6} mb={5}>
-            <HStack alignItems="center" my={6}>
-              <Avatar
-                width={6}
-                height={6}
-                source={{
-                  uri: `${api.defaults.baseURL}/images/${data?.user.avatar}`,
-                }}
-              />
-              <Text ml={2} fontFamily="body" color="gray.100" fontSize="sm">
-                {data?.user.name}
+          <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+            <VStack>
+              <Carousel images={data?.product_images} />
+            </VStack>
+            <VStack px={6} mb={5}>
+              <HStack alignItems="center" my={6}>
+                <Avatar
+                  width={6}
+                  height={6}
+                  source={{
+                    uri: `${api.defaults.baseURL}/images/${data?.user.avatar}`,
+                  }}
+                />
+                <Text ml={2} fontFamily="body" color="gray.100" fontSize="sm">
+                  {data?.user.name}
+                </Text>
+              </HStack>
+              {data?.is_new ? <TagNewSecondary /> : <TagUsedSecondary />}
+              <HStack alignItems="center" mt={2}>
+                <Text
+                  flex={1}
+                  w="80%"
+                  fontFamily="heading"
+                  fontSize="lg"
+                  color="gray.100"
+                >
+                  {data?.name}
+                </Text>
+                <Text color="blue.500" fontFamily="heading" ml={4}>
+                  <Text fontSize="sm">R$ </Text>
+                  <Text fontSize="lg">
+                    {price.toFixed(2).replace('.', ',')}
+                  </Text>
+                </Text>
+              </HStack>
+              <Text mt={1} color="gray.200" fontSize="sm" fontFamily="body">
+                {data?.description}
               </Text>
-            </HStack>
-            {data?.is_new ? <TagNewSecondary /> : <TagUsedSecondary />}
-            <HStack alignItems="baseline" justifyContent="space-between" mt={2}>
-              <Text fontFamily="heading" fontSize="lg" color="gray.100">
-                {data?.name}
+              <Text mt={6} fontSize="sm">
+                <Text fontFamily="heading">Aceita troca? </Text>
+                <Text>{data?.accept_trade ? 'Sim' : 'Não'}</Text>
               </Text>
-              <Text color="blue.500" fontFamily="heading">
+              <Text mt={3} fontFamily="heading">
+                Meios de pagamento:
+              </Text>
+              {data?.payment_methods.map((item: PaymentMethodsProps) => (
+                <Box key={item.key}>
+                  {item.key === 'boleto' && (
+                    <HStack mt={2}>
+                      <Barcode />
+                      <Text ml={2}>Boleto</Text>
+                    </HStack>
+                  )}
+                  {item.key === 'pix' && (
+                    <HStack mt={2}>
+                      <QrCode />
+                      <Text ml={2}>Pix</Text>
+                    </HStack>
+                  )}
+                  {item.key === 'cash' && (
+                    <HStack mt={2}>
+                      <Money />
+                      <Text ml={2}>Dinheiro</Text>
+                    </HStack>
+                  )}
+                  {item.key === 'card' && (
+                    <HStack mt={2}>
+                      <CreditCard />
+                      <Text ml={2}>Cartão de Crédito</Text>
+                    </HStack>
+                  )}
+                  {item.key === 'deposit' && (
+                    <HStack mt={2}>
+                      <Bank />
+                      <Text ml={2}>Depósito Bancário</Text>
+                    </HStack>
+                  )}
+                </Box>
+              ))}
+            </VStack>
+          </ScrollView>
+          <VStack justifyContent="flex-end">
+            <HStack
+              alignItems="center"
+              justifyContent="space-between"
+              px={6}
+              py={5}
+              bgColor="gray.700"
+            >
+              <Text color="blue.700" fontFamily="heading">
                 <Text fontSize="sm">R$ </Text>
-                <Text fontSize="lg">{price.toFixed(2).replace('.', ',')}</Text>
+                <Text fontSize="xl" lineHeight="sm">
+                  {price.toFixed(2).replace('.', ',')}
+                </Text>
               </Text>
+              <Button
+                title="Entrar em contato"
+                titleColor="gray.700"
+                width={189}
+                leftIcon={
+                  <WhatsappLogo size={20} color="#F7F7F8" weight="fill" />
+                }
+              />
             </HStack>
-            <Text mt={1} color="gray.200" fontSize="sm" fontFamily="body">
-              {data?.description}
-            </Text>
-            <Text mt={6} fontSize="sm">
-              <Text fontFamily="heading">Aceita troca? </Text>
-              <Text>{data?.accept_trade ? 'Sim' : 'Não'}</Text>
-            </Text>
-            <Text mt={3} fontFamily="heading">
-              Meios de pagamento:
-            </Text>
-            {data?.payment_methods.map((item: PaymentMethodsProps) => (
-              <>
-                {item.key === 'boleto' && (
-                  <HStack mt={2}>
-                    <Barcode />
-                    <Text ml={2}>Boleto</Text>
-                  </HStack>
-                )}
-                {item.key === 'pix' && (
-                  <HStack mt={2}>
-                    <QrCode />
-                    <Text ml={2}>Pix</Text>
-                  </HStack>
-                )}
-                {item.key === 'cash' && (
-                  <HStack mt={2}>
-                    <Money />
-                    <Text ml={2}>Dinheiro</Text>
-                  </HStack>
-                )}
-                {item.key === 'card' && (
-                  <HStack mt={2}>
-                    <CreditCard />
-                    <Text ml={2}>Cartão de Crédito</Text>
-                  </HStack>
-                )}
-                {item.key === 'deposit' && (
-                  <HStack mt={2}>
-                    <Bank />
-                    <Text ml={2}>Depósito Bancário</Text>
-                  </HStack>
-                )}
-              </>
-            ))}
           </VStack>
-          <HStack
-            alignItems="center"
-            justifyContent="space-between"
-            px={6}
-            py={5}
-            bgColor="gray.700"
-          >
-            <Text color="blue.700" fontFamily="heading">
-              <Text fontSize="sm">R$ </Text>
-              <Text fontSize="xl">120,00</Text>
-            </Text>
-            <Button
-              title="Entrar em contato"
-              titleColor="gray.700"
-              width={189}
-              leftIcon={
-                <WhatsappLogo size={20} color="#F7F7F8" weight="fill" />
-              }
-            />
-          </HStack>
         </VStack>
       ) : (
         <Loading />
