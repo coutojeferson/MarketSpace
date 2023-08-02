@@ -36,6 +36,7 @@ import { AppError } from '@utils/appError';
 import { api } from '@services/api';
 import { useApp } from '@hooks/useApp';
 import { Loading } from '@components/Loading';
+import { useAuth } from '@hooks/useAuth';
 
 type ImageProps = {
   id: string;
@@ -79,6 +80,7 @@ export function MyAdDetail() {
   const route = useRoute();
   const toast = useToast();
   const { saveProductDataToUpdate, productSelected } = useApp();
+  const { user } = useAuth();
 
   const price = Number(data?.price) / 100;
 
@@ -206,14 +208,26 @@ export function MyAdDetail() {
           </VStack>
           <VStack px={6} mb={5}>
             <HStack alignItems="center" my={6}>
-              <Avatar width={6} height={6} />
+              <Avatar
+                width={6}
+                height={6}
+                source={{
+                  uri: `${api.defaults.baseURL}/images/${user.avatar}`,
+                }}
+              />
               <Text ml={2} fontFamily="body" color="gray.100" fontSize="sm">
                 {data.user.name}
               </Text>
             </HStack>
             {data?.is_new ? <TagNewSecondary /> : <TagUsedSecondary />}
-            <HStack alignItems="baseline" justifyContent="space-between" mt={2}>
-              <Text fontFamily="heading" fontSize="lg" color="gray.100">
+            <HStack alignItems="center" mt={2}>
+              <Text
+                flex={1}
+                fontFamily="heading"
+                fontSize="lg"
+                color="gray.100"
+                width="80%"
+              >
                 {data?.name}
               </Text>
               <Text color="blue.500" fontFamily="heading">
