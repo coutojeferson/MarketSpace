@@ -32,7 +32,7 @@ import {
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 import { Header } from '@components/Header';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, TouchableOpacity } from 'react-native';
+import { Alert, BackHandler, TouchableOpacity } from 'react-native';
 import { AppError } from '@utils/appError';
 import { api } from '@services/api';
 import { useApp } from '@hooks/useApp';
@@ -88,6 +88,7 @@ export function MyAdDetail() {
 
   function handleGoBack() {
     navigation.navigate('myAds');
+    return true;
   }
 
   function handleEditAd(dataToUpdate: DataProps) {
@@ -179,6 +180,9 @@ export function MyAdDetail() {
   useFocusEffect(
     useCallback(() => {
       getProductById();
+      BackHandler.addEventListener('hardwareBackPress', handleGoBack);
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', handleGoBack);
     }, []),
   );
 
