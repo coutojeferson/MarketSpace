@@ -80,7 +80,8 @@ export function MyAdDetail() {
 
   const route = useRoute();
   const toast = useToast();
-  const { saveProductDataToUpdate, productSelected } = useApp();
+  const { saveProductDataToUpdate, productPreviewData, productSelected } =
+    useApp();
   const { user } = useAuth();
 
   const price = Number(data?.price) / 100;
@@ -106,7 +107,7 @@ export function MyAdDetail() {
 
   async function handleDeleteMyAd() {
     try {
-      setIsLoading(true);
+      setIsLoadingToDelete(true);
       await api.delete(`/products/${productSelected.id}`);
       toast.show({
         title: 'Anúncio removido com sucesso.',
@@ -125,7 +126,7 @@ export function MyAdDetail() {
         bgColor: 'red.500',
       });
     } finally {
-      setIsLoading(false);
+      setIsLoadingToDelete(false);
     }
   }
 

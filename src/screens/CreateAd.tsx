@@ -82,8 +82,10 @@ export function CreateAd() {
     resolver: yupResolver(createdAdSchema),
   });
 
-  function handleRemovePhoto(uri: string) {
-    const remainingPhotos = itemPhoto.filter((photos) => photos.uri !== uri);
+  function handleRemovePhoto(item: ImageProps) {
+    const remainingPhotos = itemPhoto.filter(
+      (photos) => photos.uri !== item.uri,
+    );
     setItemPhoto([...remainingPhotos]);
   }
 
@@ -171,7 +173,7 @@ export function CreateAd() {
               {itemPhoto.map((item) => (
                 <BoxSelectImage
                   images={item}
-                  onRemovePhoto={(uri) => handleRemovePhoto(uri)}
+                  onRemovePhoto={(item) => handleRemovePhoto(item)}
                 />
               ))}
             </HStack>
