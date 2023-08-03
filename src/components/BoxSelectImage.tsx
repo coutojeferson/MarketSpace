@@ -4,10 +4,16 @@ import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import Imagem from '../assets/item.png';
 import { IconClose } from './IconClose';
 import { api } from '@services/api';
-
+type ImageProps = {
+  id: string;
+  name: string;
+  uri: string;
+  path: string;
+  type: string;
+};
 type photoSelectedType = TouchableOpacityProps & {
   images?: any;
-  onRemovePhoto?: (images: string) => void;
+  onRemovePhoto?: (images: ImageProps) => void;
 };
 
 export function BoxSelectImage({

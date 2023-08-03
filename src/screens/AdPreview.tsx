@@ -63,7 +63,7 @@ export function AdPreview() {
 
       await api.post('/products/images', formData, config);
 
-      saveProductSelected(response.data.id);
+      saveProductSelected({ id: response.data.id });
       navigation.navigate('myAdDetail');
     } catch (error) {
       console.log(error);
