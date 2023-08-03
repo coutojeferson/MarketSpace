@@ -48,6 +48,7 @@ type DataProps = {
 
 export function MyAds() {
   const [service, setService] = useState('');
+  const [isloading, setIsLoading] = useState(false);
   const [data, setData] = useState<DataProps[]>([]);
   const [dataFilters, setDataFilters] = useState<DataProps[]>([]);
 
@@ -67,6 +68,7 @@ export function MyAds() {
 
   async function getProducts() {
     try {
+      setIsLoading(true);
       const response = await api.get('users/products');
       setData(response.data);
       setService('all');
@@ -80,6 +82,8 @@ export function MyAds() {
         placement: 'top',
         bgColor: 'red.500',
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -95,7 +99,6 @@ export function MyAds() {
 
     if (service === 'inactive') {
       const DataFilter = data.filter((item) => !item.is_active);
-
       setDataFilters(DataFilter);
     }
   }, [service]);
@@ -117,7 +120,7 @@ export function MyAds() {
           <Plus />
         </TouchableOpacity>
       </HStack>
-      {dataFilters.length ? (
+      {!isloading ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           <HStack alignItems="center" justifyContent="space-between" mt={8}>
             <Text fontFamily="body" fontSize="sm">
@@ -161,9 +164,11 @@ export function MyAds() {
                 </Box>
               ))
             ) : (
-              <Text textAlign="center" fontFamily="body" fontSize="md">
-                Ops! Parece que não encontramos nenhum resultado
-              </Text>
+              <VStack flex={1}>
+                <Text textAlign="center" fontFamily="body" fontSize="md">
+                  Ops! Parece que não encontramos nenhum resultado
+                </Text>
+              </VStack>
             )}
           </HStack>
         </ScrollView>
