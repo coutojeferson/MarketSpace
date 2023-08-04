@@ -57,9 +57,7 @@ export function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [photoType, setPhotoType] = useState<any>();
-  const [userPhoto, setUserPhoto] = useState(
-    'https://github.com/coutojeferson.png',
-  );
+  const [userPhoto, setUserPhoto] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const { signIn } = useAuth();
